@@ -39,10 +39,37 @@ dependencies:
   datepicker_dropdown: ^0.1.0
   google_maps_flutter: ^2.5.3
   geolocator: ^10.1.1
+  flutter_polyline_points: ^2.0.0
+  firebase_core: ^2.24.2
+  google_fonts: 6.1.0
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.14.0
+  pinput: ^4.0.0
+  persistent_bottom_nav_bar: ^5.0.2
+  font_awesome_flutter: ^10.7.0
+  shared_preferences: ^2.2.2
+  jwt_decode: ^0.3.1
+  jwt_decoder: ^2.0.1
+  im_stepper: ^1.0.1+1
+  device_preview: ^1.1.0
+  image_picker: ^1.0.7
+  permission_handler: ^11.0.1
+  transparent_image: ^2.0.1
+  http: ^1.2.0
+  firebase_storage: ^11.6.0
+  flutter_geofire: ^2.0.3
+  firebase_messaging: ^14.7.10
+  flutter_map_math: ^0.1.7
+  googleapis: ^13.1.0
+  googleapis_auth: ^1.5.1
+  flutter_dotenv: ^5.1.0
+  awesome_dialog: ^3.2.0
+  intl: ^0.18.1
+  flutter_local_notifications: ^17.0.0
 
 dev_dependencies:
   flutter_test:
-    sdk: flutter
+    sdk: flutter  
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -64,7 +91,15 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - .env
     - lib/app/assets/warehouse.png
+    - lib/app/assets/story.png
+    - lib/app/assets/check.png
+    - lib/app/assets/wallet.png
+    - lib/app/assets/bank.png
+    - lib/app/assets/userposition.png
+    - lib/app/assets/parcels.png
+    - lib/app/assets/delivery-man.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
