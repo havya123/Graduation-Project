@@ -11,4 +11,11 @@ class RouteName {
   static String trackingRoute = "/trackingRoute";
   static String historyRoute = "/historyRoute";
   static String detailTripRoute = "/detailTripRoute";
+  static String selectRoute = "/selectRoute";
+  static String multiRoute = "/multiRoute";
+  static String pickupMultiRoute = "/pickupMultiRoute";
+  static String selectMultiDestination = "/selectMultiDestination";
+  static String destinationMultiRoute = "/destinationMultiRoute";
+  static String fillPacelInforRoute = "/fillParcelInforRoute";
+  static String detailInforMultiRoute = "/detailInforMultiRoute";
 }

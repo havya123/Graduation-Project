@@ -33,18 +33,6 @@ class CustomStepper extends GetView<CustomStepperController> {
 
           return const ConfirmationScreen();
         })
-        // const BasicInformationScreen(),
-        // const DetailInformationScreen(),
-        //const ConfirmationScreen(),
-        // Row(
-        //   children: [
-        //     ElevatedButton(
-        //         onPressed: () => controller.nextStep(), child: const Text("+")),
-        //     ElevatedButton(
-        //         onPressed: () => controller.returnStep(),
-        //         child: const Text("-")),
-        //   ],
-        // )
       ],
     );
   }

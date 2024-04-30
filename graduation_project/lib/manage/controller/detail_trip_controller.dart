@@ -4,18 +4,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:graduation_project/app/util/key.dart';
 import 'package:graduation_project/manage/firebase_service/notification_service.dart';
 import 'package:graduation_project/model/device_token.dart';
 import 'package:graduation_project/model/device_token_repo.dart';
 import 'package:graduation_project/model/parcel.dart';
 import 'package:graduation_project/model/request.dart';
+import 'package:graduation_project/model/request_multi.dart';
 import 'package:graduation_project/repository/parcel_repo.dart';
 import 'package:graduation_project/repository/request_repo.dart';
 
 class DetailTripController extends GetxController {
   var params = Get.arguments['request'];
-  Request? request;
-  GoogleMapController? ggController;
+  dynamic request;
+  Rx<GoogleMapController?> ggController = Rx<GoogleMapController?>(null);
   final RxSet<Polyline> polylines = <Polyline>{}.obs;
   PolylinePoints polylinePoints = PolylinePoints();
   RxList<Marker> listMarkers = <Marker>[].obs;
@@ -24,22 +26,52 @@ class DetailTripController extends GetxController {
   static RxBool notiConfirm = false.obs;
   Rx<Parcel?> parcel = Rx<Parcel?>(null);
   RxBool isLoading = true.obs;
+  RxList<Map<String, dynamic>> listReceiver = <Map<String, dynamic>>[].obs;
 
   Future<DetailTripController> init() async {
     isLoading.value = true;
     request = params;
-    LatLng sender =
-        LatLng(request!.senderAddress['lat'], request!.senderAddress['lng']);
-    LatLng receiver = LatLng(
-        request!.receiverAddress['lat'], request!.receiverAddress['lng']);
-    parcel.value = await ParcelRepo().getParcelInfor(request!.parcelId);
+    if (request is Request) {
+      LatLng sender =
+          LatLng(request.senderAddress['lat'], request.senderAddress['lng']);
+      LatLng receiver = LatLng(
+          request.receiverAddress['lat'], request.receiverAddress['lng']);
+      parcel.value = await ParcelRepo().getParcelInfor(request.parcelId);
 
-    await createUserMarker();
-    addMarker(sender);
-    addDestination(receiver);
-    await drawPolyline(sender, receiver);
-    _calculateBounds();
-    isLoading.value = false;
+      await createUserMarker();
+      addMarker(sender);
+      addDestination(receiver);
+      await drawPolyline(sender, receiver);
+      // calculateBounds();
+      isLoading.value = false;
+      return this;
+    }
+    if (request is RequestMulti) {
+      LatLng sender =
+          LatLng(request.senderAddress['lat'], request.senderAddress['lng']);
+
+      for (var map in request.receiverAddress) {
+        listReceiver.add(map);
+      }
+      // LatLng receiver = LatLng(
+      //     request.receiverAddress['lat'], request.receiverAddress['lng']);
+      // parcel.value = await ParcelRepo().getParcelInfor(request.parcelId);
+
+      await createUserMarker();
+      addMarker(sender);
+      for (int i = 0; i < listReceiver.length; i++) {
+        addMultiDestination(
+            i, LatLng(listReceiver[i]['lat'], listReceiver[i]['lng']));
+        await drawPolyline(
+            listMarkers[i].position, listMarkers[i + 1].position);
+      }
+
+      // await drawPolyline(sender, receiver);
+
+      isLoading.value = false;
+      return this;
+    }
+
     return this;
   }
 
@@ -57,6 +89,14 @@ class DetailTripController extends GetxController {
     return (await frameInfo.image.toByteData(format: ui.ImageByteFormat.png))!
         .buffer
         .asUint8List();
+  }
+
+  void addMultiDestination(int index, LatLng lng) {
+    Marker destinationMarker = Marker(
+        markerId: MarkerId("Destination $index"),
+        position: lng,
+        infoWindow: InfoWindow(title: "Destination $index"));
+    listMarkers.add(destinationMarker);
   }
 
   void addDestination(LatLng lng) {
@@ -93,7 +133,7 @@ class DetailTripController extends GetxController {
     try {
       List<LatLng> polylineCoordinates = [];
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        'AIzaSyCYyiIDdbZMRqbLG0VMfR-go_5sO-JN6Dc',
+        MyKey.ggApiKey,
         PointLatLng(sender.latitude, sender.longitude),
         PointLatLng(receiver.latitude, receiver.longitude),
         travelMode: TravelMode.driving,
@@ -116,7 +156,7 @@ class DetailTripController extends GetxController {
     }
   }
 
-  void _calculateBounds() {
+  void calculateBounds() {
     double minLat = double.infinity;
     double maxLat = -double.infinity;
     double minLong = double.infinity;
@@ -140,17 +180,23 @@ class DetailTripController extends GetxController {
   }
 
   void _moveCameraToFitBounds() {
-    if (ggController != null) {
-      final CameraUpdate cameraUpdate =
-          CameraUpdate.newLatLngBounds(bounds.value, 50);
-      ggController!.animateCamera(cameraUpdate);
-    }
+    final CameraUpdate cameraUpdate =
+        CameraUpdate.newLatLngBounds(bounds.value, 50);
+    ggController.value!.animateCamera(cameraUpdate);
   }
 
   Future<void> confirmPickupSuccess() async {
     await RequestRepo().updateStatus(request!.requestId, 'on delivery');
     DeviceTokenModel deviceTokenModel =
         await DeviceTokenRepo().getDeviceToken(request!.driverId);
+    await NotificationService().sendNotification(
+        deviceTokenModel.deviceToken, 'Confirm success', 'Confirm success');
+  }
+
+  Future<void> confirmPickupMultiSuccess() async {
+    await RequestRepo().updateStatusMulti(request.requestId, 'on delivery');
+    DeviceTokenModel deviceTokenModel =
+        await DeviceTokenRepo().getDeviceToken(request.driverId);
     await NotificationService().sendNotification(
         deviceTokenModel.deviceToken, 'Confirm success', 'Confirm success');
   }

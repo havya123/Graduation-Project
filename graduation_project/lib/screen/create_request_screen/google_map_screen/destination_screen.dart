@@ -55,7 +55,7 @@ class DestinationScreen extends StatelessWidget {
                 child: IconButton(
                   onPressed: () {
                     controller.polylines.clear();
-                    controller.onPopDestination();
+                    //controller.onPopDestination();
                     Get.back();
                   },
                   icon: const Icon(Icons.arrow_back_ios),
@@ -127,10 +127,6 @@ class DestinationScreen extends StatelessWidget {
                               borderRadius: 5,
                               function: () {
                                 if (isConfirmRoute == true) {
-                                  Get.back();
-                                  Get.back();
-                                  controller.checkDistanceExpress();
-                                  controller.checkDistanceSaving();
                                   return;
                                 }
                                 controller.drawPolyline();

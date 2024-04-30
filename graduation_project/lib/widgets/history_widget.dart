@@ -29,10 +29,13 @@ class HistoryWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (request.statusRequest == 'waiting') {
-          Get.toNamed(RouteName.trackingRoute);
+          Get.toNamed(RouteName.trackingRoute,
+              parameters: {'requestId': request.requestId});
           return;
         }
-        Get.toNamed(RouteName.detailTripRoute, arguments: {'request': request});
+        Get.toNamed(RouteName.detailTripRoute, arguments: {
+          'request': request,
+        });
       },
       child: Container(
         width: getWidth(context, width: 1),

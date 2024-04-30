@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:graduation_project/app/util/const.dart';
 import 'package:graduation_project/extension/email_valid_extension.dart';
 
@@ -22,7 +23,8 @@ class TextFieldWidget extends StatelessWidget {
       this.function,
       this.borderRadius = 30,
       this.color = const Color(0xffF3F5F7),
-      this.textColor = Colors.white,
+      this.textColor = Colors.black,
+      this.isFocus,
       super.key});
   final String hint;
   final Widget? icon;
@@ -41,11 +43,17 @@ class TextFieldWidget extends StatelessWidget {
   final double borderRadius;
   int maxline;
   Color color, textColor;
+  RxBool? isFocus;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: const TextStyle(color: Colors.white),
-      onFieldSubmitted: function,
+      style: const TextStyle(color: Colors.black),
+      onFieldSubmitted: (value) {
+        function?.call(value);
+        if (isFocus != null) {
+          isFocus!.value = true;
+        }
+      },
       maxLines: maxline,
       controller: controller,
       inputFormatters: [

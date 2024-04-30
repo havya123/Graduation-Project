@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:graduation_project/app/util/const.dart';
 import 'package:graduation_project/manage/controller/history_controller.dart';
+import 'package:graduation_project/widgets/history_multi_widget.dart';
 import 'package:graduation_project/widgets/history_widget.dart';
 
 class HistoryScreen extends GetView<HistoryController> {
@@ -29,10 +30,45 @@ class HistoryScreen extends GetView<HistoryController> {
                   child: Row(
                     children: [
                       const Icon(Icons.arrow_back_ios),
-                      Text(
-                        "History of activities",
-                        style: largeTextStyle(context),
+                      Expanded(
+                        child: Text(
+                          "History of activities",
+                          style: largeTextStyle(context),
+                        ),
                       ),
+                      IconButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Delivery Type'),
+                                content: Column(
+                                  mainAxisSize:
+                                      MainAxisSize.min, // Restrict content size
+                                  children: [
+                                    ListTile(
+                                      title: const Text('Default'),
+                                      onTap: () {
+                                        controller.mode.value = "Default";
+                                        Get.back(); // Close dialog
+                                        controller.getAllRequest();
+                                      },
+                                    ),
+                                    ListTile(
+                                      title: const Text('Multi Express'),
+                                      onTap: () async {
+                                        controller.mode.value = "Multi Express";
+                                        // Handle multi express delivery selection (update state or logic)
+                                        Get.back(); // Close dialog
+                                        controller.getAllRequestMulti();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.settings))
                     ],
                   ),
                 ),
@@ -81,27 +117,54 @@ class HistoryScreen extends GetView<HistoryController> {
                 ),
                 spaceHeight(context),
                 Obx(() {
-                  if (controller.loading.value) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
+                  if (controller.mode.value == "Default") {
+                    if (controller.loading.value) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return Expanded(
+                      child: Obx(() {
+                        return ListView.separated(
+                          itemBuilder: (context, index) {
+                            return HistoryWidget(
+                              request: controller
+                                  .allRequest[controller.index.value][index],
+                            );
+                          },
+                          separatorBuilder: (context, index) =>
+                              spaceHeight(context),
+                          itemCount: controller
+                              .allRequest[controller.index.value].length,
+                        );
+                      }),
                     );
                   }
-                  return Expanded(
-                    child: Obx(() {
-                      return ListView.separated(
-                        itemBuilder: (context, index) {
-                          return HistoryWidget(
-                            request: controller
-                                .allRequest[controller.index.value][index],
-                          );
-                        },
-                        separatorBuilder: (context, index) =>
-                            spaceHeight(context),
-                        itemCount: controller
-                            .allRequest[controller.index.value].length,
+                  if (controller.mode.value == "Multi Express") {
+                    if (controller.loading.value) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
                       );
-                    }),
-                  );
+                    }
+                    return Expanded(
+                      child: Obx(() {
+                        return ListView.separated(
+                          itemBuilder: (context, index) {
+                            return HistoryMultiWidget(
+                              request: controller
+                                      .allRequestMulti[controller.index.value]
+                                  [index],
+                            );
+                          },
+                          separatorBuilder: (context, index) =>
+                              spaceHeight(context),
+                          itemCount: controller
+                              .allRequestMulti[controller.index.value].length,
+                        );
+                      }),
+                    );
+                  }
+                  return const SizedBox();
                 }),
               ],
             ),

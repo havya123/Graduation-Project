@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:graduation_project/app/store/app_store.dart';
 import 'package:graduation_project/model/request.dart';
+import 'package:graduation_project/model/request_multi.dart';
 import 'package:graduation_project/repository/request_repo.dart';
 
 class HistoryController extends GetxController {
-  RxList<Request> listRequestCancel = <Request>[].obs;
-  RxList<Request> listRequestWaiting = <Request>[].obs;
-  RxList<Request> listRequestTaking = <Request>[].obs;
-  RxList<Request> listRequestDelivery = <Request>[].obs;
-  RxList<Request> listRequestSuccess = <Request>[].obs;
   RxList<List<Request>> allRequest = <List<Request>>[].obs;
+  RxList<List<RequestMulti>> allRequestMulti = <List<RequestMulti>>[].obs;
+
   RxBool loading = true.obs;
+  RxString mode = 'Default'.obs;
   ScrollController titleController = ScrollController();
   final double scrollTo = 60;
   List<String> listType = [
@@ -26,18 +25,7 @@ class HistoryController extends GetxController {
 
   @override
   Future<HistoryController> onInit() async {
-    await getListRequestCancel();
-    await getListRequestDelivery();
-    await getListRequestSuccess();
-    await getListRequestTaking();
-    await getListRequestWaiting();
-    allRequest.value = [
-      listRequestWaiting,
-      listRequestTaking,
-      listRequestDelivery,
-      listRequestSuccess,
-      listRequestCancel,
-    ];
+    await getAllRequest();
     loading.value = false;
     return this;
   }
@@ -45,7 +33,6 @@ class HistoryController extends GetxController {
   void scrollTitle(int index) {
     if (titleController.hasClients) {
       double newPosition = index * scrollTo;
-      print('New Position: $newPosition');
       titleController.animateTo(
         newPosition,
         duration: const Duration(milliseconds: 500),
@@ -94,29 +81,84 @@ class HistoryController extends GetxController {
     }
   }
 
-  Future<void> getListRequestCancel() async {
-    listRequestCancel.value =
-        await RequestRepo().getListRequestCancel(AppStore.to.uid);
+  Future<void> getAllRequestMulti() async {
+    loading.value = true;
+    allRequestMulti.clear();
+    List<RequestMulti> listRequestMultiCancel = <RequestMulti>[];
+    List<RequestMulti> listRequestMultiWaiting = <RequestMulti>[];
+    List<RequestMulti> listRequestMultiTaking = <RequestMulti>[];
+    List<RequestMulti> listRequestMultiDelivery = <RequestMulti>[];
+    List<RequestMulti> listRequestMultiSuccess = <RequestMulti>[];
+    listRequestMultiCancel =
+        await RequestRepo().getListRequestMultiCancel(AppStore.to.uid);
+    listRequestMultiWaiting =
+        await RequestRepo().getListRequestMultWaiting(AppStore.to.uid);
+    listRequestMultiSuccess =
+        await RequestRepo().getListRequestMultiSuccess(AppStore.to.uid);
+    listRequestMultiDelivery =
+        await RequestRepo().getListRequestMultiDelivery(AppStore.to.uid);
+    listRequestMultiTaking =
+        await RequestRepo().getListRequestMultiTaking(AppStore.to.uid);
+    allRequestMulti.addAll([
+      listRequestMultiWaiting,
+      listRequestMultiTaking,
+      listRequestMultiDelivery,
+      listRequestMultiSuccess,
+      listRequestMultiCancel,
+    ]);
+    loading.value = false;
   }
 
-  Future<void> getListRequestWaiting() async {
-    listRequestWaiting.value =
-        await RequestRepo().getListRequestWaiting(AppStore.to.uid);
-    print(listRequestWaiting);
+  Future<void> getAllRequest() async {
+    loading.value = true;
+    allRequest.clear();
+    List<Request> listRequestCancel = <Request>[];
+    List<Request> listRequestWaiting = <Request>[];
+    List<Request> listRequestTaking = <Request>[];
+    List<Request> listRequestDelivery = <Request>[];
+    List<Request> listRequestSuccess = <Request>[];
+    listRequestCancel = await getListRequestCancel();
+    listRequestDelivery = await getListRequestDelivery();
+    listRequestSuccess = await getListRequestSuccess();
+    listRequestTaking = await getListRequestTaking();
+    listRequestWaiting = await getListRequestWaiting();
+    allRequest.value = [
+      listRequestWaiting,
+      listRequestTaking,
+      listRequestDelivery,
+      listRequestSuccess,
+      listRequestCancel,
+    ];
+    loading.value = false;
   }
 
-  Future<void> getListRequestTaking() async {
-    listRequestTaking.value =
-        await RequestRepo().getListRequestTaking(AppStore.to.uid);
+  Future<List<Request>> getListRequestCancel() async {
+    List<Request> listRequest = [];
+    listRequest = await RequestRepo().getListRequestCancel(AppStore.to.uid);
+    return listRequest;
   }
 
-  Future<void> getListRequestDelivery() async {
-    listRequestDelivery.value =
-        await RequestRepo().getListRequestDelivery(AppStore.to.uid);
+  Future<List<Request>> getListRequestWaiting() async {
+    List<Request> listRequest = [];
+    listRequest = await RequestRepo().getListRequestWaiting(AppStore.to.uid);
+    return listRequest;
   }
 
-  Future<void> getListRequestSuccess() async {
-    listRequestSuccess.value =
-        await RequestRepo().getListRequestSuccess(AppStore.to.uid);
+  Future<List<Request>> getListRequestTaking() async {
+    List<Request> listRequest = [];
+    listRequest = await RequestRepo().getListRequestTaking(AppStore.to.uid);
+    return listRequest;
+  }
+
+  Future<List<Request>> getListRequestDelivery() async {
+    List<Request> listRequest = [];
+    listRequest = await RequestRepo().getListRequestDelivery(AppStore.to.uid);
+    return listRequest;
+  }
+
+  Future<List<Request>> getListRequestSuccess() async {
+    List<Request> listRequest = [];
+    listRequest = await RequestRepo().getListRequestSuccess(AppStore.to.uid);
+    return listRequest;
   }
 }

@@ -74,4 +74,14 @@ class ParcelRepo {
       print(e);
     }
   }
+
+  Future<void> deleteParcel(String parcelId) async {
+    await FirebaseService.parcelRef.doc(parcelId).delete();
+  }
+
+  Future<void> deleteParcelMulti(List<String> listParcelId) async {
+    for (var id in listParcelId) {
+      await FirebaseService.parcelRef.doc(id).delete();
+    }
+  }
 }

@@ -5,12 +5,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:graduation_project/app/route/route_name.dart';
 import 'package:graduation_project/app/store/app_store.dart';
+import 'package:graduation_project/app/store/services.dart';
+import 'package:graduation_project/app/util/key.dart';
 import 'package:graduation_project/extension/snackbar.dart';
 import 'package:graduation_project/manage/controller/geofire_assistant.dart';
 import 'package:graduation_project/manage/firebase_service/notification_service.dart';
 import 'package:graduation_project/model/driver_active_nearby.dart';
 import 'package:graduation_project/model/request.dart';
+import 'package:graduation_project/model/request_multi.dart';
+import 'package:graduation_project/repository/parcel_repo.dart';
 import 'package:graduation_project/repository/request_repo.dart';
 
 class TrackingController extends GetxController
@@ -20,28 +25,46 @@ class TrackingController extends GetxController
   RxList<Marker> listMarkers = <Marker>[].obs;
   // RxBool activeNearbyDriverKeysLoad = false.obs;
   Rx<Request?> currentRequest = Rx<Request?>(null);
+  Rx<RequestMulti?> currentRequestMulti = Rx<RequestMulti?>(null);
   RxList<Circle> circleSet = <Circle>[].obs;
   RxList<Request> listRequest = <Request>[].obs;
   late Uint8List iconMarker, delivery;
   AnimationController? animationController;
   Animation<double>? radiusAnimation;
+  static bool requestAccepted = false;
 
   Future<TrackingController> init() async {
     waiting.value = true;
     NotificationService.onRequestAccept = () => stopAnimate();
+    String? request = Get.parameters['requestId'];
+    String? type = Get.parameters['type'];
     await createUserMarker();
-    await getRequest();
-    if (currentRequest.value!.driverId.isEmpty) {
-      initAnimate();
-      addCircle(LatLng(currentRequest.value!.senderAddress['lat'],
+    await getRequest(request, type);
+
+    if (type == null) {
+      if (currentRequest.value!.driverId.isEmpty) {
+        initAnimate();
+        addCircle(LatLng(currentRequest.value!.senderAddress['lat'],
+            currentRequest.value!.senderAddress['lng']));
+      }
+      initializeGeoFireListener();
+      addMarker(LatLng(currentRequest.value!.senderAddress['lat'],
           currentRequest.value!.senderAddress['lng']));
+      waiting.value = false;
     }
-    initializeGeoFireListener();
+    if (type != null) {
+      if (currentRequestMulti.value!.driverId.isEmpty) {
+        initAnimate();
+        addCircle(LatLng(currentRequestMulti.value!.senderAddress['lat'],
+            currentRequestMulti.value!.senderAddress['lng']));
+      }
+      initializeGeoFireListener();
 
-    addMarker(LatLng(currentRequest.value!.senderAddress['lat'],
-        currentRequest.value!.senderAddress['lng']));
+      addMarker(LatLng(currentRequestMulti.value!.senderAddress['lat'],
+          currentRequestMulti.value!.senderAddress['lng']));
 
-    waiting.value = false;
+      waiting.value = false;
+    }
 
     return this;
   }
@@ -171,20 +194,38 @@ class TrackingController extends GetxController
         .asUint8List();
   }
 
-  Future<void> getRequest() async {
-    Request? request = await RequestRepo().getRequest(AppStore.to.newRequest);
-    if (request != null) {
-      currentRequest.value = request;
-      return;
+  Future<void> getRequest(String? requestId, String? type) async {
+    if (type == null) {
+      Request? request =
+          await RequestRepo().getRequest(requestId ?? AppStore.to.newRequest);
+      if (request != null) {
+        currentRequest.value = request;
+        AppStore.to.lastedRequest = currentRequest;
+        return;
+      }
+      MyDialogs.error(msg: "Something went wrong. Please try again");
     }
-    MyDialogs.error(msg: "Something went wrong. Please try again");
+    if (type == "multi") {
+      RequestMulti? request = await RequestRepo()
+          .getRequestMulti(requestId ?? AppStore.to.newRequest);
+      if (request != null) {
+        currentRequestMulti.value = request;
+        AppStore.to.lastedRequest = currentRequestMulti;
+        return;
+      }
+    }
   }
 
   initializeGeoFireListener() {
     Geofire.initialize("activeDrivers");
-
-    double lat = currentRequest.value!.senderAddress['lat'];
-    double lng = currentRequest.value!.senderAddress['lng'];
+    double lat, lng;
+    if (currentRequest.value != null) {
+      lat = currentRequest.value!.senderAddress['lat'];
+      lng = currentRequest.value!.senderAddress['lng'];
+    } else {
+      lat = currentRequestMulti.value!.senderAddress['lat'];
+      lng = currentRequestMulti.value!.senderAddress['lng'];
+    }
 
     try {
       Geofire.queryAtLocation(lat, lng, 2)!.listen((event) async {
@@ -198,12 +239,18 @@ class TrackingController extends GetxController
               driver.driverId = event['key'];
               GeoFireAssistant().addDriver(driver);
               disPlayActiveDriver();
-              if (currentRequest.value!.driverId.isEmpty) {
-                LatLng currentRequest = LatLng(
-                    AppStore.to.lastedRequest.value!.senderAddress['lat'],
-                    AppStore.to.lastedRequest.value!.senderAddress['lng']);
-                await GeoFireAssistant().sendRequestToDriver(currentRequest);
+              if (currentRequest.value != null) {
+                if (currentRequest.value!.driverId.isEmpty) {
+                  LatLng currentRequest = LatLng(lat, lng);
+                  await GeoFireAssistant().sendRequestToDriver(currentRequest);
+                }
+              } else {
+                if (currentRequestMulti.value!.driverId.isEmpty) {
+                  LatLng currentRequest = LatLng(lat, lng);
+                  await GeoFireAssistant().sendRequestToDriver(currentRequest);
+                }
               }
+
               break;
             case Geofire.onKeyExited:
               GeoFireAssistant().deleteOfflineDriverFromList(event['key']);
@@ -244,6 +291,47 @@ class TrackingController extends GetxController
           icon: BitmapDescriptor.fromBytes(delivery),
           rotation: 360);
       listMarkers.add(marker);
+    }
+  }
+
+  Future<void> cancelRequest() async {
+    if (currentRequest.value != null) {
+      if (requestAccepted) {
+        MyDialogs.error(msg: "You cannot cancel the request");
+        return;
+      }
+      MyDialogs.showProgress();
+      await RequestRepo().deleteRequest(currentRequest.value!.requestId);
+      await ParcelRepo().deleteParcel(currentRequest.value!.parcelId);
+      MyDialogs.success(
+        msg: "You have deleted request successfully",
+      );
+      AppStore.to.lastedRequest.value == null;
+      AppStore.to.newRequest == "";
+      AppServices.to.removeString(MyKey.newRequest);
+
+      Get.back();
+      Get.offNamed(RouteName.homeRoute);
+    }
+    if (currentRequestMulti.value != null) {
+      if (requestAccepted) {
+        MyDialogs.error(msg: "You cannot cancel the request");
+        return;
+      }
+      MyDialogs.showProgress();
+      await RequestRepo()
+          .deleteRequestMulti(currentRequestMulti.value!.requestId);
+      await ParcelRepo().deleteParcelMulti(currentRequestMulti.value!.parcelId);
+      MyDialogs.success(
+        msg: "You have deleted request successfully",
+      );
+      AppStore.to.lastedRequest.value == null;
+      AppStore.to.newRequest == "";
+      AppServices.to.removeString(MyKey.newRequest);
+
+      Get.back();
+      Get.back();
+      Get.offNamed(RouteName.categoryRoute);
     }
   }
 }

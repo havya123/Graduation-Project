@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:graduation_project/app/store/services.dart';
 import 'package:graduation_project/app/util/key.dart';
 import 'package:graduation_project/manage/controller/geofire_assistant.dart';
+import 'package:graduation_project/manage/firebase_service/notification_service.dart';
 import 'package:graduation_project/model/request.dart';
 import 'package:graduation_project/model/user.dart';
 import 'package:graduation_project/repository/request_repo.dart';
@@ -18,9 +19,11 @@ class AppStore extends GetxController {
   String avatar = "";
   bool isExpired = true;
   String newRequest = "";
-  Rx<Request?> lastedRequest = Rx<Request?>(null);
+  Rx<dynamic> lastedRequest = Rx<dynamic>(dynamic);
 
   Future<AppStore> init() async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.remove(MyKey.driverSent);
     String tokenSaved = AppServices.to.getString(MyKey.token);
     String driverSent = AppServices.to.getString(MyKey.driverSent);
     if (driverSent.isNotEmpty) {

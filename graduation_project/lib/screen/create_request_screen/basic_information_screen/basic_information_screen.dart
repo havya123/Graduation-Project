@@ -34,7 +34,7 @@ class BasicInformationScreen extends StatelessWidget {
           spaceHeight(context, height: 0.02),
           Container(
             width: double.infinity,
-            height: getHeight(context, height: 0.32),
+            height: getHeight(context, height: 0.3),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               color: const Color(0xff202020),
@@ -49,7 +49,7 @@ class BasicInformationScreen extends StatelessWidget {
                         FontAwesomeIcons.locationDot,
                         color: green,
                       ),
-                      for (int i = 0; i < 5; i++) ...[
+                      for (int i = 0; i < 7; i++) ...[
                         Icon(
                           Icons.arrow_drop_down,
                           size: 14,
@@ -87,9 +87,9 @@ class BasicInformationScreen extends StatelessWidget {
                         Obx(() {
                           return Text(
                             controllerRequest.destination.value?.address ??
-                                "Receive address",
+                                "Receiver Address",
                             style: smallTextStyle(context,
-                                color: Colors.white, size: 12),
+                                color: Colors.white, size: 14),
                           );
                         }),
                       ],

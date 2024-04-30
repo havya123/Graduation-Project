@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:graduation_project/model/device_token.dart';
 import 'package:graduation_project/model/parcel.dart';
 import 'package:graduation_project/model/request.dart';
+import 'package:graduation_project/model/request_multi.dart';
 import 'package:graduation_project/model/user.dart';
 
 class FirebaseService {
@@ -15,6 +16,12 @@ class FirebaseService {
             fromFirestore: (snapshot, _) => Request.fromMap(snapshot.data()!),
             toFirestore: (request, _) => request.toMap(),
           );
+  static final requestMultiRef = FirebaseFirestore.instance
+      .collection("requestMulti")
+      .withConverter<RequestMulti>(
+        fromFirestore: (snapshot, _) => RequestMulti.fromMap(snapshot.data()!),
+        toFirestore: (request, _) => request.toMap(),
+      );
   static final parcelRef =
       FirebaseFirestore.instance.collection("parcel").withConverter<Parcel>(
             fromFirestore: (snapshot, _) => Parcel.fromMap(snapshot.data()!),

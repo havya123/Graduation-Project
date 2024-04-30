@@ -11,9 +11,11 @@ import 'package:graduation_project/app/store/app_store.dart';
 import 'package:graduation_project/app/store/services.dart';
 import 'package:graduation_project/app/util/key.dart';
 import 'package:graduation_project/extension/snackbar.dart';
-import 'package:graduation_project/manage/controller/geofire_assistant.dart';
+import 'package:graduation_project/model/auto_complete_prediction.dart';
 import 'package:graduation_project/model/place.dart';
+import 'package:graduation_project/model/place_auto_complete_response.dart';
 import 'package:graduation_project/repository/parcel_repo.dart';
+import 'package:graduation_project/repository/place_repo.dart';
 import 'package:graduation_project/repository/request_repo.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,6 +24,7 @@ import 'package:http/http.dart' as http;
 import 'dart:math' show cos, sqrt, asin;
 
 class RequestController extends GetxController {
+  static RequestController get to => Get.find<RequestController>();
   RxInt activateStep = 0.obs;
   RxList<XFile?> listImageSelect = <XFile>[].obs;
   RxInt countImage = 0.obs;
@@ -37,6 +40,10 @@ class RequestController extends GetxController {
   RxBool banking = false.obs;
   RxDouble priceExpress = 0.0.obs;
   RxDouble priceSaving = 0.0.obs;
+  RxBool isFocusPick = false.obs;
+  RxBool isFocusDes = false.obs;
+  RxBool isConfirmRoute = false.obs;
+  late Rx<LatLngBounds> bounds;
 
   final formKey = GlobalKey<FormState>();
   // RxDouble cost
@@ -45,8 +52,16 @@ class RequestController extends GetxController {
   final RxSet<Polyline> polylines = <Polyline>{}.obs;
   PolylinePoints polylinePoints = PolylinePoints();
 
+  RxList<AutoCompletePrediction> pickPrediction =
+      <AutoCompletePrediction>[].obs;
+
+  RxList<AutoCompletePrediction> destinationPrediction =
+      <AutoCompletePrediction>[].obs;
+
   // final List<Marker> myMarkers = [];
   RxList<Marker> listMarkers = <Marker>[].obs;
+  late Rx<TextEditingController> pickPlaceSearch;
+  late Rx<TextEditingController> destinationSearch;
   late TextEditingController dimensionController;
   late TextEditingController weightController;
   late TextEditingController senderName;
@@ -67,12 +82,16 @@ class RequestController extends GetxController {
     receiverName = TextEditingController();
     receiverPhone = TextEditingController();
     receiverNote = TextEditingController();
+    pickPlaceSearch = TextEditingController().obs;
+    destinationSearch = TextEditingController().obs;
     await createUserMarker();
 
     if (currentPosition == null) {
       await getCurrentPosition();
       await getPlaceByAttitude(
           "${currentPosition?.value.latitude},${currentPosition?.value.longitude}");
+      waiting.value = false;
+    } else {
       waiting.value = false;
     }
 
@@ -121,6 +140,34 @@ class RequestController extends GetxController {
     }
     cash.value = true;
     banking.value = false;
+  }
+
+  void searchPickAutoComplete(String query) async {
+    pickPrediction.clear();
+    String url =
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&key=${MyKey.ggApiKey}';
+
+    String? response = await PlaceRepo().fetchUrl(url);
+    if (response != null) {
+      PlaceAutoComplete result = PlaceAutoComplete.parseAutoComplete(response);
+      if (result.prediction != null) {
+        pickPrediction.value = result.prediction!;
+      }
+    }
+  }
+
+  void searchDesAutoComplete(String query) async {
+    destinationPrediction.clear();
+    String url =
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&key=${MyKey.ggApiKey}';
+
+    String? response = await PlaceRepo().fetchUrl(url);
+    if (response != null) {
+      PlaceAutoComplete result = PlaceAutoComplete.parseAutoComplete(response);
+      if (result.prediction != null) {
+        destinationPrediction.value = result.prediction!;
+      }
+    }
   }
 
   Future<void> createUserMarker() async {
@@ -197,7 +244,7 @@ class RequestController extends GetxController {
     moveCamera(lng);
   }
 
-  Future<void> addDestination(LatLng lng) async {
+  void addDestination(LatLng lng) {
     bool hasDestinationMarker =
         listMarkers.any((marker) => marker.markerId.value == "Destination");
     if (hasDestinationMarker) {
@@ -255,7 +302,7 @@ class RequestController extends GetxController {
 
   Future<void> getPlaceByAttitude(String keyword) async {
     final String url =
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=$keyword&key=AIzaSyCYyiIDdbZMRqbLG0VMfR-go_5sO-JN6Dc";
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=$keyword&key=${MyKey.ggApiKey}";
 
     final uri = Uri.parse(url);
     var response = await http.get(uri);
@@ -270,11 +317,12 @@ class RequestController extends GetxController {
         address: dataLocation['formatted_address'],
         lat: dataLocation['geometry']['location']['lat'],
         lng: dataLocation['geometry']['location']['lng']);
+    pickPlaceSearch.value.text = pickPlace.value!.address;
   }
 
   Future<void> getDestinationByAttitude(String keyword) async {
     final String url =
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=$keyword&key=AIzaSyCYyiIDdbZMRqbLG0VMfR-go_5sO-JN6Dc";
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=$keyword&key=${MyKey.ggApiKey}";
 
     final uri = Uri.parse(url);
     var response = await http.get(uri);
@@ -289,9 +337,18 @@ class RequestController extends GetxController {
         address: dataLocation['formatted_address'],
         lat: dataLocation['geometry']['location']['lat'],
         lng: dataLocation['geometry']['location']['lng']);
+    destinationSearch.value.text = destination.value!.address;
   }
 
-  void onPopDestination() {
+  void onPopPickScreen() {
+    pickPlace.value = null;
+    isConfirmRoute.value = false;
+    bool hasPickPlace =
+        listMarkers.any((marker) => marker.markerId.value == "My Position");
+    if (hasPickPlace) {
+      listMarkers
+          .removeWhere((marker) => marker.markerId.value == "My Position");
+    }
     destination.value = null;
     bool hasDestinationMarker =
         listMarkers.any((marker) => marker.markerId.value == "Destination");
@@ -299,24 +356,15 @@ class RequestController extends GetxController {
       listMarkers
           .removeWhere((marker) => marker.markerId.value == "Destination");
     }
-  }
-
-  void onPopPickScreen() {
-    pickPlace.value = null;
-    currentPosition = null;
-    bool hasPickPlace =
-        listMarkers.any((marker) => marker.markerId.value == "My Position");
-    if (hasPickPlace) {
-      listMarkers
-          .removeWhere((marker) => marker.markerId.value == "My Position");
-    }
+    pickPlaceSearch.value.clear();
+    destinationSearch.value.clear();
   }
 
   Future<void> drawPolyline() async {
     try {
       List<LatLng> polylineCoordinates = [];
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        'AIzaSyCYyiIDdbZMRqbLG0VMfR-go_5sO-JN6Dc',
+        MyKey.ggApiKey,
         PointLatLng(listMarkers[0].position.latitude,
             listMarkers[0].position.longitude),
         PointLatLng(listMarkers[1].position.latitude,
@@ -457,5 +505,87 @@ class RequestController extends GetxController {
 
     priceSaving.value = calculatePriceSaving(distance);
     print('Price: ${priceSaving.value} VND');
+  }
+
+  Future<void> onTapPickScreen(LatLng lng) async {
+    if (pickPlace.value == null) {
+      addMarker(lng);
+      await getPlaceByAttitude("${lng.latitude},${lng.longitude}");
+    } else {
+      addDestination(lng);
+      await getDestinationByAttitude("${lng.latitude},${lng.longitude}");
+    }
+  }
+
+  Future<void> searchByPlaceId(String id) async {
+    final String url =
+        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$id&key=${MyKey.ggApiKey}";
+    final uri = Uri.parse(url);
+    var response = await http.get(uri);
+    Map<String, dynamic> data = jsonDecode(response.body);
+    print(data);
+    Map<String, dynamic> dataLocation = data['result'];
+    if (dataLocation.isEmpty) {
+      return;
+    }
+    pickPlace.value = Place(
+        name: dataLocation['address_components'][1]['long_name'],
+        address: dataLocation['formatted_address'],
+        lat: dataLocation['geometry']['location']['lat'],
+        lng: dataLocation['geometry']['location']['lng']);
+    pickPlaceSearch.value.text = pickPlace.value!.address;
+    addMarker(LatLng(pickPlace.value!.lat, pickPlace.value!.lng));
+  }
+
+  Future<void> searchByPlaceDesId(String id) async {
+    final String url =
+        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$id&key=${MyKey.ggApiKey}";
+    final uri = Uri.parse(url);
+    var response = await http.get(uri);
+    Map<String, dynamic> data = jsonDecode(response.body);
+    print(data);
+    Map<String, dynamic> dataLocation = data['result'];
+    if (dataLocation.isEmpty) {
+      return;
+    }
+    destination.value = Place(
+        name: dataLocation['address_components'][1]['long_name'],
+        address: dataLocation['formatted_address'],
+        lat: dataLocation['geometry']['location']['lat'],
+        lng: dataLocation['geometry']['location']['lng']);
+    destinationSearch.value.text = destination.value!.address;
+    addDestination(LatLng(destination.value!.lat, destination.value!.lng));
+    isConfirmRoute.value = false;
+  }
+
+  void calculateBounds() {
+    double minLat = double.infinity;
+    double maxLat = -double.infinity;
+    double minLong = double.infinity;
+    double maxLong = -double.infinity;
+
+    for (final marker in listMarkers) {
+      final lat = marker.position.latitude;
+      final long = marker.position.longitude;
+      minLat = lat < minLat ? lat : minLat;
+      maxLat = lat > maxLat ? lat : maxLat;
+      minLong = long < minLong ? long : minLong;
+      maxLong = long > maxLong ? long : maxLong;
+    }
+
+    bounds = LatLngBounds(
+      southwest: LatLng(minLat, minLong),
+      northeast: LatLng(maxLat, maxLong),
+    ).obs;
+
+    _moveCameraToFitBounds();
+  }
+
+  void _moveCameraToFitBounds() {
+    if (myController != null) {
+      final CameraUpdate cameraUpdate =
+          CameraUpdate.newLatLngBounds(bounds.value, 50);
+      myController!.animateCamera(cameraUpdate);
+    }
   }
 }

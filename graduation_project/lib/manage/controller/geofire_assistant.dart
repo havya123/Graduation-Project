@@ -11,6 +11,9 @@ import 'package:graduation_project/model/device_token_repo.dart';
 import 'package:graduation_project/model/driver_active_nearby.dart';
 import 'dart:math' show cos, sqrt, asin;
 
+import 'package:graduation_project/model/request.dart';
+import 'package:graduation_project/model/request_multi.dart';
+
 class GeoFireAssistant extends GetxController {
   static List<DriverActiveNearby> activeDriver = [];
   static Map<String, dynamic> driverSent = {};
@@ -42,6 +45,19 @@ class GeoFireAssistant extends GetxController {
 
   Future<void> sendRequestToDriver(LatLng senderAddress) async {
     String requestId = AppStore.to.lastedRequest.value!.requestId;
+    String requestType = "";
+    if (AppStore.to.lastedRequest.value is Request) {
+      if (AppStore.to.lastedRequest.value.type == "saving") {
+        requestType = "saving";
+      }
+      if (AppStore.to.lastedRequest.value.type == "express") {
+        requestType = "request";
+      }
+    }
+    if (AppStore.to.lastedRequest.value is RequestMulti) {
+      requestType = "requestMulti";
+    }
+
     LatLng parcelLatlng = const LatLng(10.802962, 106.715098);
     if (activeDriver.length > 1) {
       activeDriver.sort((driver1, driver2) => calculateDistance(
@@ -65,7 +81,9 @@ class GeoFireAssistant extends GetxController {
             .getDeviceToken(driverReceiver.driverId as String);
 
         await NotificationService().sendNotification(
-            deviceTokenModel.deviceToken, 'A new request coming', requestId);
+            deviceTokenModel.deviceToken,
+            'A new request coming',
+            {'requestId': requestId, 'requestType': requestType});
         driverSent[requestId]!.add(driverReceiver.driverId as String);
         break;
       }
