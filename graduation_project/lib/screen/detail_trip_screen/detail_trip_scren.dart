@@ -155,6 +155,11 @@ class DetailTripScreen extends GetView<DetailTripController> {
                                   "on taking") ...<Widget>[
                                 ButtonWidget(
                                   function: () async {
+                                    if (controller.request!.type == "saving") {
+                                      await controller
+                                          .confirmPickupSuccessSaving();
+                                      return;
+                                    }
                                     await controller.confirmPickupSuccess();
                                   },
                                   textButton: "Confirm successful pickup",

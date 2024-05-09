@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,6 +33,7 @@ class CreateRequestMultiController extends GetxController {
   Rx<Place?> pickPlace = Rx<Place?>(null);
 
   RxList<Place> listDestination = <Place>[].obs;
+  late Rx<LatLngBounds> bounds;
 
   RxBool isChoosedExpress = false.obs;
   RxBool isChoosedSaving = false.obs;
@@ -490,8 +490,6 @@ class CreateRequestMultiController extends GetxController {
 
       while (remainingMarkers.length > 1) {
         remainingMarkers.remove(startMarker);
-        // List<Marker> newList =
-        //     remainingMarkers.where((marker) => marker != startMarker).toList();
         Marker nearestMarker =
             _findNearestMarker(startMarker, remainingMarkers);
 
@@ -662,5 +660,36 @@ class CreateRequestMultiController extends GetxController {
     }
 
     return listAddress;
+  }
+
+  void calculateBounds() {
+    double minLat = double.infinity;
+    double maxLat = -double.infinity;
+    double minLong = double.infinity;
+    double maxLong = -double.infinity;
+
+    for (final marker in listMarkers) {
+      final lat = marker.position.latitude;
+      final long = marker.position.longitude;
+      minLat = lat < minLat ? lat : minLat;
+      maxLat = lat > maxLat ? lat : maxLat;
+      minLong = long < minLong ? long : minLong;
+      maxLong = long > maxLong ? long : maxLong;
+    }
+
+    bounds = LatLngBounds(
+      southwest: LatLng(minLat, minLong),
+      northeast: LatLng(maxLat, maxLong),
+    ).obs;
+
+    _moveCameraToFitBounds();
+  }
+
+  void _moveCameraToFitBounds() {
+    if (myController != null) {
+      final CameraUpdate cameraUpdate =
+          CameraUpdate.newLatLngBounds(bounds.value, 50);
+      myController!.animateCamera(cameraUpdate);
+    }
   }
 }

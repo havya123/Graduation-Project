@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:graduation_project/app/util/const.dart';
+import 'package:graduation_project/manage/controller/geofire_assistant.dart';
 import 'package:graduation_project/manage/controller/tracking_controller.dart';
 
 class TrackingScreen extends GetView<TrackingController> {
@@ -19,6 +21,7 @@ class TrackingScreen extends GetView<TrackingController> {
         return Obx(
           () {
             LatLng requestPosition;
+
             if (controller.currentRequest.value == null) {
               requestPosition = LatLng(
                   controller.currentRequestMulti.value!.senderAddress['lat'],

@@ -47,7 +47,7 @@ class TrackingController extends GetxController
         addCircle(LatLng(currentRequest.value!.senderAddress['lat'],
             currentRequest.value!.senderAddress['lng']));
       }
-      initializeGeoFireListener();
+      refreshGeo();
       addMarker(LatLng(currentRequest.value!.senderAddress['lat'],
           currentRequest.value!.senderAddress['lng']));
       waiting.value = false;
@@ -58,7 +58,7 @@ class TrackingController extends GetxController
         addCircle(LatLng(currentRequestMulti.value!.senderAddress['lat'],
             currentRequestMulti.value!.senderAddress['lng']));
       }
-      initializeGeoFireListener();
+      refreshGeo();
 
       addMarker(LatLng(currentRequestMulti.value!.senderAddress['lat'],
           currentRequestMulti.value!.senderAddress['lng']));
@@ -67,6 +67,15 @@ class TrackingController extends GetxController
     }
 
     return this;
+  }
+
+  void refreshGeo() {
+    initializeGeoFireListener();
+    if (GeoFireAssistant.activeDriver.isEmpty) {
+      Future.delayed(const Duration(seconds: 15), () {
+        refreshGeo();
+      });
+    }
   }
 
   @override
@@ -295,43 +304,50 @@ class TrackingController extends GetxController
   }
 
   Future<void> cancelRequest() async {
-    if (currentRequest.value != null) {
-      if (requestAccepted) {
-        MyDialogs.error(msg: "You cannot cancel the request");
+    try {
+      if (currentRequest.value != null) {
+        if (requestAccepted) {
+          MyDialogs.error(msg: "You cannot cancel the request");
+          return;
+        }
+        MyDialogs.showProgress();
+        await RequestRepo().deleteRequest(currentRequest.value!.requestId);
+        await ParcelRepo().deleteParcel(currentRequest.value!.parcelId);
+        MyDialogs.success(
+          msg: "You have deleted request successfully",
+        );
+        AppStore.to.lastedRequest.value == null;
+        AppStore.to.newRequest == "";
+        AppServices.to.removeString(MyKey.newRequest);
+
+        Get.back();
+        Get.offNamed(RouteName.categoryRoute);
         return;
       }
-      MyDialogs.showProgress();
-      await RequestRepo().deleteRequest(currentRequest.value!.requestId);
-      await ParcelRepo().deleteParcel(currentRequest.value!.parcelId);
-      MyDialogs.success(
-        msg: "You have deleted request successfully",
-      );
-      AppStore.to.lastedRequest.value == null;
-      AppStore.to.newRequest == "";
-      AppServices.to.removeString(MyKey.newRequest);
+      if (currentRequestMulti.value != null) {
+        if (requestAccepted) {
+          MyDialogs.error(msg: "You cannot cancel the request");
+          return;
+        }
+        MyDialogs.showProgress();
+        await RequestRepo()
+            .deleteRequestMulti(currentRequestMulti.value!.requestId);
+        await ParcelRepo()
+            .deleteParcelMulti(currentRequestMulti.value!.parcelId);
+        MyDialogs.success(
+          msg: "You have deleted request successfully",
+        );
+        AppStore.to.lastedRequest.value == null;
+        AppStore.to.newRequest == "";
+        AppServices.to.removeString(MyKey.newRequest);
 
-      Get.back();
-      Get.offNamed(RouteName.homeRoute);
-    }
-    if (currentRequestMulti.value != null) {
-      if (requestAccepted) {
-        MyDialogs.error(msg: "You cannot cancel the request");
+        Get.back();
+        Get.back();
+        Get.offNamed(RouteName.categoryRoute);
         return;
       }
-      MyDialogs.showProgress();
-      await RequestRepo()
-          .deleteRequestMulti(currentRequestMulti.value!.requestId);
-      await ParcelRepo().deleteParcelMulti(currentRequestMulti.value!.parcelId);
-      MyDialogs.success(
-        msg: "You have deleted request successfully",
-      );
-      AppStore.to.lastedRequest.value == null;
-      AppStore.to.newRequest == "";
-      AppServices.to.removeString(MyKey.newRequest);
-
-      Get.back();
-      Get.back();
-      Get.offNamed(RouteName.categoryRoute);
+    } catch (e) {
+      print(e);
     }
   }
 }

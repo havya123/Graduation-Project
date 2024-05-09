@@ -44,6 +44,7 @@ class DestinationMultiScreen extends StatelessWidget {
                       zoom: 15),
                   onMapCreated: (GoogleMapController clr) {
                     controller.myController = clr;
+                    controller.calculateBounds();
                   },
                 );
               },

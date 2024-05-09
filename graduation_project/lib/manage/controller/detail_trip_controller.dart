@@ -193,6 +193,14 @@ class DetailTripController extends GetxController {
         deviceTokenModel.deviceToken, 'Confirm success', 'Confirm success');
   }
 
+  Future<void> confirmPickupSuccessSaving() async {
+    await RequestRepo().updateStatus(request!.requestId, 'on delivery');
+    DeviceTokenModel deviceTokenModel =
+        await DeviceTokenRepo().getDeviceToken(request!.driverId);
+    await NotificationService().sendNotification(deviceTokenModel.deviceToken,
+        'Confirm success', 'Confirm success saving');
+  }
+
   Future<void> confirmPickupMultiSuccess() async {
     await RequestRepo().updateStatusMulti(request.requestId, 'on delivery');
     DeviceTokenModel deviceTokenModel =

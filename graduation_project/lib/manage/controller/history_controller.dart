@@ -21,7 +21,6 @@ class HistoryController extends GetxController {
     'Cancel',
   ];
   RxInt index = 0.obs;
-  bool isScroll = false;
 
   @override
   Future<HistoryController> onInit() async {

@@ -45,13 +45,14 @@ class GeoFireAssistant extends GetxController {
 
   Future<void> sendRequestToDriver(LatLng senderAddress) async {
     String requestId = AppStore.to.lastedRequest.value!.requestId;
+    String deviceToken = AppStore.to.deviceToken.value;
     String requestType = "";
     if (AppStore.to.lastedRequest.value is Request) {
       if (AppStore.to.lastedRequest.value.type == "saving") {
         requestType = "saving";
       }
       if (AppStore.to.lastedRequest.value.type == "express") {
-        requestType = "request";
+        requestType = "express";
       }
     }
     if (AppStore.to.lastedRequest.value is RequestMulti) {
@@ -81,9 +82,11 @@ class GeoFireAssistant extends GetxController {
             .getDeviceToken(driverReceiver.driverId as String);
 
         await NotificationService().sendNotification(
-            deviceTokenModel.deviceToken,
-            'A new request coming',
-            {'requestId': requestId, 'requestType': requestType});
+            deviceTokenModel.deviceToken, 'A new request coming', {
+          'requestId': requestId,
+          'requestType': requestType,
+          'deviceToken': deviceToken
+        });
         driverSent[requestId]!.add(driverReceiver.driverId as String);
         break;
       }

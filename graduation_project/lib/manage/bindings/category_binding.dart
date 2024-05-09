@@ -3,7 +3,6 @@ import 'package:graduation_project/manage/controller/category_controller.dart';
 import 'package:graduation_project/manage/controller/create_request_controller.dart';
 import 'package:graduation_project/manage/controller/custom_stepper_controller.dart';
 import 'package:graduation_project/manage/controller/geofire_assistant.dart';
-import 'package:graduation_project/manage/controller/picker_controller.dart';
 
 class CategoryBinding extends Bindings {
   @override

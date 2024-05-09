@@ -119,13 +119,17 @@ class CategoryScreen extends GetView<CategoryController> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(100),
-                                          color: Colors.green),
+                                    GestureDetector(
+                                      onTap: () =>
+                                          Get.toNamed(RouteName.requestRoute),
+                                      child: Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(100),
+                                            color: Colors.green),
+                                      ),
                                     ),
                                     spaceHeight(context, height: 0.01),
                                     Text(
