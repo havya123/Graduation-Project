@@ -9,6 +9,7 @@ class ImageMultiSelected extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FractionallySizedBox(
+      widthFactor: 1,
       heightFactor: 0.3,
       child: Column(
         children: [

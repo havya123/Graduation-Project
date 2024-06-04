@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -89,6 +90,33 @@ class CreateRequestMultiController extends GetxController {
 
     waiting.value = false;
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    // Cleanup resources here
+    pickPlaceSearch.close();
+    senderName.dispose();
+    senderPhone.dispose();
+    senderNote.dispose();
+    searchPlace.dispose();
+    for (var controller in listWeightController) {
+      controller.dispose();
+    }
+    for (var controller in listDimensionController) {
+      controller.dispose();
+    }
+    for (var controller in listReceiverName) {
+      controller.dispose();
+    }
+    for (var controller in listReceiverPhone) {
+      controller.dispose();
+    }
+    for (var controller in listReceiverNote) {
+      controller.dispose();
+    }
+    listImage.close(); // Close all RxList<XFile?> streams
   }
 
   Future<void> createUserMarker() async {
@@ -440,50 +468,11 @@ class CreateRequestMultiController extends GetxController {
     }
     return true;
   }
-  // Future<void> drawPolylines(int index) async {
-  //   try {
-  //     if (index >= listMarkers.length - 1) {
-  //       // Stop drawing polylines if all points have been connected
-  //       return;
-  //     }
-
-  //     LatLng currentPoint = listMarkers[index].position;
-  //     LatLng nextPoint = listMarkers[index + 1].position;
-
-  //     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-  //       MyKey.ggApiKey,
-  //       PointLatLng(currentPoint.latitude, currentPoint.longitude),
-  //       PointLatLng(nextPoint.latitude, nextPoint.longitude),
-  //       travelMode: TravelMode.driving,
-  //     );
-
-  //     List<LatLng> polylineCoordinates = [];
-  //     if (result.points.isNotEmpty) {
-  //       for (var point in result.points) {
-  //         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-  //       }
-  //     }
-
-  //     Polyline polyline = Polyline(
-  //       polylineId: PolylineId('nearest_neighbor_polyline_$index'),
-  //       color: Colors.primaries[index],
-  //       points: polylineCoordinates,
-  //       width: 3,
-  //     );
-
-  //     polylines.add(polyline);
-
-  //     await Future.delayed(const Duration(seconds: 1));
-  //     drawPolylines(index + 1);
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
 
   Future<void> drawPolylines() async {
     try {
+      final stopwatch = Stopwatch()..start();
       List<Place> listTemp = [];
-
       List<LatLng> polylineCoordinates = [];
       List<Marker> remainingMarkers = List.from(listMarkers); // Create a copy
       Marker startMarker = listMarkers[0];
@@ -529,9 +518,20 @@ class CreateRequestMultiController extends GetxController {
       }
       listDestination.clear();
       listDestination.value = listTemp;
+      stopwatch.stop();
+      print('Function Execution Time : ${stopwatch.elapsed}');
     } catch (e) {
       print(e);
     }
+  }
+
+  double _routeDistance(List<Marker> route) {
+    double totalDistance = 0;
+    for (int i = 0; i < route.length - 1; i++) {
+      totalDistance +=
+          _calculateDistance(route[i].position, route[i + 1].position);
+    }
+    return totalDistance;
   }
 
   Marker _findNearestMarker(Marker currentPoint, List<Marker> markers) {
@@ -620,7 +620,7 @@ class CreateRequestMultiController extends GetxController {
       };
 
       String requestId = await RequestRepo().createRequestMulti(
-        AppStore.to.uid,
+        AppStore.to.uid.value,
         senderPhone.text,
         senderAddress,
         listAddress,
@@ -636,7 +636,7 @@ class CreateRequestMultiController extends GetxController {
       AppStore.to.newRequest = requestId;
       AppServices.to.setString(MyKey.newRequest, requestId);
       MyDialogs.success(msg: "You have created request successfully");
-      Get.offNamed(
+      Get.offAllNamed(
         RouteName.trackingRoute,
         parameters: {'type': 'multi'},
       );

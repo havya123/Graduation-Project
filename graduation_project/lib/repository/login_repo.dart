@@ -5,14 +5,15 @@ class LoginRepo {
   Future<void> createAccount(String uid, String name, String phoneNumber,
       String email, String dob) async {
     await FirebaseService.userRef.doc().set(User(
-        uid: uid,
-        phoneNumber: phoneNumber,
-        email: email,
-        dob: dob,
-        userName: "",
-        avatar:
-            "https://png.pngtree.com/element_our/20200610/ourmid/pngtree-character-default-avatar-image_2237203.jpg",
-        active: "online"));
+          uid: uid,
+          phoneNumber: phoneNumber,
+          email: email,
+          dob: dob,
+          userName: "",
+          avatar:
+              "https://firebasestorage.googleapis.com/v0/b/delivery-5f21b.appspot.com/o/user%2Favatar%2Fuser.png?alt=media&token=af828096-f5ab-4ae8-a994-67ca7ea6584c",
+          address: "",
+        ));
   }
 
   Future<bool> isExist(String phoneNumber) async {

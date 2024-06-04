@@ -89,15 +89,15 @@ class HistoryController extends GetxController {
     List<RequestMulti> listRequestMultiDelivery = <RequestMulti>[];
     List<RequestMulti> listRequestMultiSuccess = <RequestMulti>[];
     listRequestMultiCancel =
-        await RequestRepo().getListRequestMultiCancel(AppStore.to.uid);
+        await RequestRepo().getListRequestMultiCancel(AppStore.to.uid.value);
     listRequestMultiWaiting =
-        await RequestRepo().getListRequestMultWaiting(AppStore.to.uid);
+        await RequestRepo().getListRequestMultWaiting(AppStore.to.uid.value);
     listRequestMultiSuccess =
-        await RequestRepo().getListRequestMultiSuccess(AppStore.to.uid);
+        await RequestRepo().getListRequestMultiSuccess(AppStore.to.uid.value);
     listRequestMultiDelivery =
-        await RequestRepo().getListRequestMultiDelivery(AppStore.to.uid);
+        await RequestRepo().getListRequestMultiDelivery(AppStore.to.uid.value);
     listRequestMultiTaking =
-        await RequestRepo().getListRequestMultiTaking(AppStore.to.uid);
+        await RequestRepo().getListRequestMultiTaking(AppStore.to.uid.value);
     allRequestMulti.addAll([
       listRequestMultiWaiting,
       listRequestMultiTaking,
@@ -133,31 +133,36 @@ class HistoryController extends GetxController {
 
   Future<List<Request>> getListRequestCancel() async {
     List<Request> listRequest = [];
-    listRequest = await RequestRepo().getListRequestCancel(AppStore.to.uid);
+    listRequest =
+        await RequestRepo().getListRequestCancel(AppStore.to.uid.value);
     return listRequest;
   }
 
   Future<List<Request>> getListRequestWaiting() async {
     List<Request> listRequest = [];
-    listRequest = await RequestRepo().getListRequestWaiting(AppStore.to.uid);
+    listRequest =
+        await RequestRepo().getListRequestWaiting(AppStore.to.uid.value);
     return listRequest;
   }
 
   Future<List<Request>> getListRequestTaking() async {
     List<Request> listRequest = [];
-    listRequest = await RequestRepo().getListRequestTaking(AppStore.to.uid);
+    listRequest =
+        await RequestRepo().getListRequestTaking(AppStore.to.uid.value);
     return listRequest;
   }
 
   Future<List<Request>> getListRequestDelivery() async {
     List<Request> listRequest = [];
-    listRequest = await RequestRepo().getListRequestDelivery(AppStore.to.uid);
+    listRequest =
+        await RequestRepo().getListRequestDelivery(AppStore.to.uid.value);
     return listRequest;
   }
 
   Future<List<Request>> getListRequestSuccess() async {
     List<Request> listRequest = [];
-    listRequest = await RequestRepo().getListRequestSuccess(AppStore.to.uid);
+    listRequest =
+        await RequestRepo().getListRequestSuccess(AppStore.to.uid.value);
     return listRequest;
   }
 }

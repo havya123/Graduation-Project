@@ -20,14 +20,20 @@ class LoginScreen extends GetView<LoginController> {
             children: [
               Container(
                 width: size(context).width,
-                color: Colors.yellow,
                 height: getHeight(context, height: 0.5),
+                decoration: const BoxDecoration(
+                  color: Color(0xffF2FCF8),
+                ),
+                child: Image.asset(
+                  "lib/app/assets/logo.png",
+                  fit: BoxFit.contain,
+                ),
               ),
               Positioned(
                 bottom: 0,
                 child: Container(
                   width: size(context).width,
-                  height: getHeight(context, height: 0.65),
+                  height: getHeight(context, height: 0.55),
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.vertical(

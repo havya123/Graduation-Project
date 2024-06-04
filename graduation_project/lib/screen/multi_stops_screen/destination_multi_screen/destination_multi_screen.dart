@@ -75,23 +75,23 @@ class DestinationMultiScreen extends StatelessWidget {
               //   icon: const Icon(Icons.arrow_back_ios),
               // ),
             ),
-            Positioned(
-                bottom: getHeight(context, height: 0.3),
-                right: getWidth(context),
-                child: GestureDetector(
-                  onTap: () {
-                    controller.polylines.clear();
-                    // controller.moveCamera(LatLng(
-                    //     controller.pickPlace.value!.lat,
-                    //     controller.pickPlace.value!.lng));
-                  },
-                  child: Container(
-                      width: 50,
-                      height: 50,
-                      color: Colors.white,
-                      child:
-                          const Center(child: Icon(Icons.location_searching))),
-                )),
+            // Positioned(
+            //     bottom: getHeight(context, height: 0.3),
+            //     right: getWidth(context),
+            //     child: GestureDetector(
+            //       onTap: () {`````````````````````````````````
+            //         controller.polylines.clear();
+            //         // controller.moveCamera(LatLng(
+            //         //     controller.pickPlace.value!.lat,
+            //         //     controller.pickPlace.value!.lng));
+            //       },
+            //       child: Container(
+            //           width: 50,
+            //           height: 50,
+            //           color: Colors.white,
+            //           child:
+            //               const Center(child: Icon(Icons.location_searching))),
+            //     )),
             DraggableScrollableSheet(
               initialChildSize: 0.2,
               minChildSize: 0.2,

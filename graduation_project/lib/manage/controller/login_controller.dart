@@ -157,7 +157,7 @@ class LoginController extends GetxController {
       bool isExist = await LoginRepo().isExist(phoneNumber.text);
 
       if (isExist) {
-        saveUser(uid);
+        await saveUser(uid);
         Get.toNamed(RouteName.categoryRoute);
       } else {
         await createAccount(
@@ -197,7 +197,6 @@ class LoginController extends GetxController {
   Future<void> saveUser(String uid) async {
     User user = await LoginRepo().getUser(uid);
     AppStore.to.updateUser(user);
-
-    AppServices.to.setString(MyKey.user, user);
+    AppServices.to.setString(MyKey.user, uid);
   }
 }

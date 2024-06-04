@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:graduation_project/app/util/const.dart';
+import 'package:graduation_project/extension/snackbar.dart';
 import 'package:graduation_project/manage/controller/login_controller.dart';
 import 'package:graduation_project/widgets/button.dart';
 import 'package:graduation_project/widgets/input_widget.dart';
@@ -40,20 +41,23 @@ class PhoneRegisterScreen extends StatelessWidget {
                     ),
                   ),
                   spaceHeight(context),
-                  Container(
-                    width: getWidth(context, width: 0.7),
-                    height: getHeight(context, height: 0.3),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.yellow),
-                  ),
                   spaceHeight(context),
-                  const Text(
-                    "Create Account",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Login Account",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25),
+                    ),
+                  ),
+                  spaceHeight(
+                    context,
+                  ),
+                  Text(
+                    "Please enter your phone number to receive a verification code.",
+                    style: smallTextStyle(context),
                   ),
                   spaceHeight(context, height: 0.1),
                   TextFieldWidget(
@@ -67,6 +71,7 @@ class PhoneRegisterScreen extends StatelessWidget {
                   ButtonWidget(
                     function: () async {
                       if (controller.phoneNumber.value.text.isNotEmpty) {
+                        MyDialogs.showProgress();
                         await controller.sentOtp(context);
                       }
                     },

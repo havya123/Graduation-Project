@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:graduation_project/model/device_token.dart';
 import 'package:graduation_project/model/parcel.dart';
 import 'package:graduation_project/model/request.dart';
@@ -6,6 +7,7 @@ import 'package:graduation_project/model/request_multi.dart';
 import 'package:graduation_project/model/user.dart';
 
 class FirebaseService {
+  static late final firebaseApp;
   static final userRef =
       FirebaseFirestore.instance.collection("users").withConverter<User>(
             fromFirestore: (snapshot, _) => User.fromMap(snapshot.data()!),
@@ -34,4 +36,11 @@ class FirebaseService {
             DeviceTokenModel.fromMap(snapshot.data()!),
         toFirestore: (deviceToken, _) => deviceToken.toMap(),
       );
+
+  static final driverRef = FirebaseDatabase.instanceFor(
+          app: firebaseApp,
+          databaseURL:
+              "https://delivery-5f21b-default-rtdb.asia-southeast1.firebasedatabase.app")
+      .ref()
+      .child("drivers");
 }

@@ -9,6 +9,7 @@ class ImageSelected extends StatelessWidget {
   Widget build(BuildContext context) {
     var controller = Get.find<RequestController>();
     return FractionallySizedBox(
+      widthFactor: 1,
       heightFactor: 0.3,
       child: Column(
         children: [

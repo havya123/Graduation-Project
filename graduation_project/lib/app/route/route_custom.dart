@@ -5,7 +5,6 @@ import 'package:graduation_project/manage/bindings/custom_stepper_binding.dart';
 import 'package:graduation_project/manage/bindings/detail_trip_binding.dart';
 import 'package:graduation_project/manage/bindings/history_binding.dart';
 import 'package:graduation_project/manage/bindings/login_binding.dart';
-import 'package:graduation_project/manage/bindings/multi_stepper_binding.dart';
 import 'package:graduation_project/manage/bindings/multi_stop_binding.dart';
 import 'package:graduation_project/manage/bindings/profile_binding.dart';
 import 'package:graduation_project/manage/bindings/select_binding.dart';
@@ -112,7 +111,7 @@ class RouteCustom {
     ),
     GetPage(
       name: RouteName.detailInforMultiRoute,
-      page: () => DetailInforMultiScreen(),
+      page: () => const DetailInforMultiScreen(),
     ),
   ];
 }

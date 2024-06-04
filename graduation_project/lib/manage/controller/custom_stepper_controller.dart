@@ -50,22 +50,25 @@ class CustomStepperController extends GetxController {
                     ),
                     Center(
                       child: Obx(() {
-                        return Container(
-                            width: 35,
-                            height: 35,
-                            clipBehavior: Clip.hardEdge,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              color: (i < activateStep.value)
-                                  ? const Color(0xff9BFE03)
-                                  : Colors.white,
-                            ),
-                            child: (i >= activateStep.value)
-                                ? icons[i]
-                                : const Icon(
-                                    FontAwesomeIcons.check,
-                                    color: Colors.black,
-                                  ));
+                        return GestureDetector(
+                          onTap: () => changeIndex(i),
+                          child: Container(
+                              width: 35,
+                              height: 35,
+                              clipBehavior: Clip.hardEdge,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: (i < activateStep.value)
+                                    ? const Color(0xff9BFE03)
+                                    : Colors.white,
+                              ),
+                              child: (i >= activateStep.value)
+                                  ? icons[i]
+                                  : const Icon(
+                                      FontAwesomeIcons.check,
+                                      color: Colors.black,
+                                    )),
+                        );
                       }),
                     ),
                     Expanded(
@@ -119,5 +122,19 @@ class CustomStepperController extends GetxController {
       return;
     }
     activateStep.value--;
+  }
+
+  void changeIndex(int index) {
+    if (activateStep.value == 1) {
+      if (index == 2) {
+        return;
+      }
+    }
+    if (activateStep.value == 0) {
+      if (index >= 1 && index <= 2) {
+        return;
+      }
+    }
+    activateStep.value = index;
   }
 }

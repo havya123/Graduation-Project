@@ -33,9 +33,13 @@ class BasicInforMultiScreen extends StatelessWidget {
           spaceHeight(context, height: 0.02),
           Container(
             width: double.infinity,
-            height: controller.listDestination.isEmpty
+            height: controller.listDestination.length < 2
                 ? getHeight(context, height: 0.3)
-                : getHeight(context, height: 0.45),
+                : controller.listDestination.length < 3
+                    ? getHeight(context, height: 0.45)
+                    : controller.listDestination.length < 6
+                        ? getHeight(context, height: 0.6)
+                        : getHeight(context, height: 0.8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               color: const Color(0xff202020),
@@ -52,7 +56,7 @@ class BasicInforMultiScreen extends StatelessWidget {
                       ),
                       if (controller.listDestination.isEmpty)
                         ...List.generate(
-                            5,
+                            6,
                             (index) => Icon(
                                   Icons.arrow_drop_down,
                                   size: 14,
@@ -85,6 +89,7 @@ class BasicInforMultiScreen extends StatelessWidget {
                           return Text(
                             controller.pickPlace.value?.address ??
                                 "Sender address",
+                            maxLines: 2,
                             style: mediumTextStyle(context,
                                 size: 14, color: Colors.white),
                           );
@@ -137,147 +142,6 @@ class BasicInforMultiScreen extends StatelessWidget {
                 "Fill Parcel Information >>",
                 style: mediumTextStyle(context, color: Colors.white),
               )),
-          // spaceHeight(context),
-          // Text(
-          //   "Collect time",
-          //   style: mediumTextStyle(context, color: Colors.white),
-          // ),
-          // spaceHeight(context, height: 0.02),
-          // SizedBox(
-          //   height: getHeight(context, height: 0.2),
-          //   width: double.infinity,
-          //   child: const Row(
-          //     children: [],
-          //   ),
-          // ),
-          // spaceHeight(context, height: 0.04),
-          // Text(
-          //   "Upload your package image",
-          //   style: mediumTextStyle(context, color: Colors.white),
-          // ),
-          // spaceHeight(context),
-          // Row(
-          //   children: [
-          //     GestureDetector(
-          //       onTap: () {
-          //         showModalBottomSheet(
-          //             context: context,
-          //             builder: (context) {
-          //               return const ImageSelected();
-          //             });
-          //       },
-          //       child: Container(
-          //         width: getWidth(context, width: 0.4),
-          //         height: getHeight(context, height: 0.15),
-          //         decoration: BoxDecoration(
-          //             color: Colors.transparent,
-          //             border: Border.all(color: Colors.white),
-          //             borderRadius: BorderRadius.circular(20)),
-          //         child: Column(
-          //           children: [
-          //             SizedBox(
-          //                 width: getWidth(context, width: 0.3),
-          //                 height: getHeight(context, height: 0.08),
-          //                 child: const Center(
-          //                   child: Icon(
-          //                     FontAwesomeIcons.camera,
-          //                     size: 20,
-          //                     color: Colors.white,
-          //                   ),
-          //                 )),
-          //             Text(
-          //               "Thêm ảnh",
-          //               style: mediumTextStyle(context,
-          //                   color: Colors.white, size: 18),
-          //             )
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ],
-          // ),
-          // spaceHeight(context),
-          // Obx(() {
-          //   if (controller.listImageSelect.isEmpty) {
-          //     return const SizedBox();
-          //   }
-          //   return SizedBox(
-          //     height: getHeight(context, height: 0.2),
-          //     child: ListView.separated(
-          //         shrinkWrap: true,
-          //         scrollDirection: Axis.horizontal,
-          //         itemBuilder: (context, index) {
-          //           return Stack(
-          //             children: [
-          //               Container(
-          //                 width: getWidth(context, width: 0.5),
-          //                 clipBehavior: Clip.hardEdge,
-          //                 decoration: BoxDecoration(
-          //                     borderRadius: BorderRadius.circular(20)),
-          //                 child: Image.file(
-          //                   File(controller.listImageSelect[index]!.path),
-          //                   fit: BoxFit.cover,
-          //                 ),
-          //               ),
-          //               Positioned(
-          //                 right: 0,
-          //                 top: 0,
-          //                 child: IconButton(
-          //                   onPressed: () {
-          //                     // controller.deleteImage(index);
-          //                   },
-          //                   icon: const Icon(FontAwesomeIcons.xmark),
-          //                 ),
-          //               ),
-          //             ],
-          //           );
-          //         },
-          //         separatorBuilder: (context, index) => spaceWidth(context),
-          //         itemCount: controller.listImageSelect.length),
-          //   );
-          // }),
-          // spaceHeight(context),
-          // Text(
-          //   "Good Details",
-          //   style: smallTextStyle(context, color: Colors.white, size: 14),
-          // ),
-          // spaceHeight(context, height: 0.02),
-          // Container(
-          //   width: double.infinity,
-          //   height: getHeight(context, height: 0.28),
-          //   decoration: BoxDecoration(
-          //     borderRadius: BorderRadius.circular(15),
-          //     color: const Color(0xff202020),
-          //   ),
-          //   child: Padding(
-          //     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-          //     child: Column(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       crossAxisAlignment: CrossAxisAlignment.center,
-          //       children: [
-          //         TextFieldWidget(
-          //           type: TextInputType.number,
-          //           borderRadius: 20,
-          //           color: lightGrey,
-          //           hintText: 'Enter dimension *cm',
-          //           hint: '',
-          //           maxline: 1,
-          //           // controller: controller.dimensionController,
-          //         ),
-          //         spaceHeight(context, height: 0.02),
-          //         TextFieldWidget(
-          //           type: TextInputType.number,
-          //           borderRadius: 20,
-          //           color: lightGrey,
-          //           hintText: 'Enter weight *Kg',
-          //           hint: '',
-          //           maxline: 1,
-          //           // controller: controller.weightController,
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
           spaceHeight(context, height: 0.1),
           Row(
             children: [

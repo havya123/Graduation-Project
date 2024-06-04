@@ -26,9 +26,8 @@ class RegisterButton extends StatelessWidget {
       onTap: () async {
         if (isLoading.value) return;
         isLoading.value = !isLoading.value;
-        await Future.delayed(const Duration(seconds: 2));
-        isLoading.value = !isLoading.value;
         function();
+        isLoading.value = !isLoading.value;
       },
       child: Ink(
         child: Container(

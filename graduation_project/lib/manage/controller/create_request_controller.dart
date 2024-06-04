@@ -11,6 +11,7 @@ import 'package:graduation_project/app/store/app_store.dart';
 import 'package:graduation_project/app/store/services.dart';
 import 'package:graduation_project/app/util/key.dart';
 import 'package:graduation_project/extension/snackbar.dart';
+import 'package:graduation_project/manage/controller/category_controller.dart';
 import 'package:graduation_project/model/auto_complete_prediction.dart';
 import 'package:graduation_project/model/place.dart';
 import 'package:graduation_project/model/place_auto_complete_response.dart';
@@ -24,7 +25,7 @@ import 'package:http/http.dart' as http;
 import 'dart:math' show cos, sqrt, asin;
 
 class RequestController extends GetxController {
-  static RequestController get to => Get.find<RequestController>();
+  // static RequestController get to => Get.find<RequestController>();
   RxInt activateStep = 0.obs;
   RxList<XFile?> listImageSelect = <XFile>[].obs;
   RxInt countImage = 0.obs;
@@ -73,7 +74,7 @@ class RequestController extends GetxController {
   late Uint8List iconMarker;
 
   @override
-  void onInit() async {
+  Future<RequestController> onInit() async {
     dimensionController = TextEditingController();
     weightController = TextEditingController();
     senderName = TextEditingController();
@@ -95,7 +96,7 @@ class RequestController extends GetxController {
       waiting.value = false;
     }
 
-    super.onInit();
+    return this;
   }
 
   bool isValidate() {
@@ -144,6 +145,10 @@ class RequestController extends GetxController {
 
   void searchPickAutoComplete(String query) async {
     pickPrediction.clear();
+    if (query.isEmpty) {
+      isFocusPick.value = false;
+      return;
+    }
     String url =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&key=${MyKey.ggApiKey}';
 
@@ -152,12 +157,17 @@ class RequestController extends GetxController {
       PlaceAutoComplete result = PlaceAutoComplete.parseAutoComplete(response);
       if (result.prediction != null) {
         pickPrediction.value = result.prediction!;
+        isFocusPick.value = true;
+      } else {
+        isFocusPick.value = false;
+        return;
       }
     }
   }
 
   void searchDesAutoComplete(String query) async {
     destinationPrediction.clear();
+    if (query.isEmpty) return;
     String url =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&key=${MyKey.ggApiKey}';
 
@@ -166,6 +176,10 @@ class RequestController extends GetxController {
       PlaceAutoComplete result = PlaceAutoComplete.parseAutoComplete(response);
       if (result.prediction != null) {
         destinationPrediction.value = result.prediction!;
+        isFocusDes.value = true;
+      } else {
+        isFocusDes.value = false;
+        return;
       }
     }
   }
@@ -318,6 +332,7 @@ class RequestController extends GetxController {
         lat: dataLocation['geometry']['location']['lat'],
         lng: dataLocation['geometry']['location']['lng']);
     pickPlaceSearch.value.text = pickPlace.value!.address;
+    // CategoryController.currentLocation.value = pickPlaceSearch.value.text;
   }
 
   Future<void> getDestinationByAttitude(String keyword) async {
@@ -423,7 +438,7 @@ class RequestController extends GetxController {
       };
 
       String requestId = await RequestRepo().createRequest(
-          AppStore.to.uid,
+          AppStore.to.uid.value,
           senderPhone.text,
           receiverPhone.text,
           senderAddress,

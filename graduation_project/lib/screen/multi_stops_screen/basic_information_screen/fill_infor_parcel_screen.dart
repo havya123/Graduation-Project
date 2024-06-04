@@ -161,7 +161,7 @@ class FillInforPacelScreen extends StatelessWidget {
                       TextFieldWidget(
                           type: TextInputType.number,
                           borderRadius: 12,
-                          hintText: 'Enter weight *Kg',
+                          hintText: 'Enter weight *g',
                           hint: '',
                           maxline: 1,
                           controller: controller.listWeightController[index]

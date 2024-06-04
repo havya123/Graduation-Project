@@ -285,4 +285,32 @@ class RequestRepo {
   Future<void> deleteRequestMulti(String requestId) async {
     await FirebaseService.requestMultiRef.doc(requestId).delete();
   }
+
+  Future<Request?> getLastedRequest(String userId) async {
+    var response = await FirebaseService.requestRef
+        .where('userId', isEqualTo: userId)
+        .orderBy('created', descending: true)
+        .limit(1)
+        .get();
+    if (response.docs.isNotEmpty) {
+      return response.docs.first.data();
+    }
+    return null;
+  }
+
+  Stream<Request?> getLastedRequestStream(String userId) {
+    return FirebaseService.requestRef
+        .where('userId', isEqualTo: userId)
+        .orderBy('created', descending: true)
+        .limit(1)
+        .snapshots()
+        .map((event) {
+      if (event.docs.isNotEmpty) {
+        print(event.docs.first.data());
+        return event.docs.first.data();
+      } else {
+        return null;
+      }
+    });
+  }
 }

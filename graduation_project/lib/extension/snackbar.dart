@@ -10,6 +10,7 @@ class MyDialogs {
 
   static error({required String msg}) {
     Get.snackbar('Error', msg,
+        duration: const Duration(seconds: 5),
         colorText: Colors.white,
         backgroundColor: Colors.redAccent.withOpacity(.9));
   }

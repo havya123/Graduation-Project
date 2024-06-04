@@ -8,36 +8,39 @@ class User {
   String dob;
   String userName;
   String avatar;
-  String active;
-  User(
-      {required this.uid,
-      required this.phoneNumber,
-      required this.email,
-      required this.dob,
-      required this.userName,
-      required this.avatar,
-      required this.active});
+  String? address;
+  User({
+    required this.uid,
+    required this.phoneNumber,
+    required this.email,
+    required this.dob,
+    required this.userName,
+    required this.avatar,
+    required this.address,
+  });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'userName': userName,
       'uid': uid,
       'phoneNumber': phoneNumber,
       'email': email,
       'dob': dob,
       'avatar': avatar,
-      'active': active
+      'address': address,
     };
   }
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
-        uid: map['uid'] ?? "",
-        phoneNumber: map['phoneNumber'] ?? "",
-        email: map['email'] ?? "",
-        dob: map['dob'] ?? "",
-        userName: map['userName'] ?? "",
-        avatar: map['avatar'] ?? "",
-        active: map['active'] ?? "");
+      uid: map['uid'] ?? "",
+      phoneNumber: map['phoneNumber'] ?? "",
+      email: map['email'] ?? "",
+      dob: map['dob'] ?? "",
+      userName: map['userName'] ?? "",
+      avatar: map['avatar'] ?? "",
+      address: map['address'] ?? "",
+    );
   }
 
   String toJson() => json.encode(toMap());

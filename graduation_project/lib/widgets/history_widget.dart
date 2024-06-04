@@ -62,7 +62,7 @@ class HistoryWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          flex: 3,
+                          flex: 5,
                           child: Text(
                             "Delivery to ${request.receiverAddress['receiverAddress']}",
                             maxLines: 3,
@@ -72,10 +72,11 @@ class HistoryWidget extends StatelessWidget {
                         ),
                         spaceWidth(context, width: 0.06),
                         Expanded(
-                          flex: 1,
+                          flex: 3,
                           child: Text(
                             "${request.cost}VND",
-                            style: mediumTextStyle(context, size: 18),
+                            style: mediumTextStyle(context,
+                                size: 12, fontWeight: FontWeight.bold),
                           ),
                         )
                       ],

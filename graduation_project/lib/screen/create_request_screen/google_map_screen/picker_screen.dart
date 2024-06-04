@@ -110,7 +110,6 @@ class PickerScreen extends StatelessWidget {
                     children: [
                       Obx(() {
                         return TextFieldWidget(
-                          isFocus: controller.isFocusPick,
                           icon: Image.asset(
                             "lib/app/assets/userposition.png",
                             scale: 15,
@@ -132,7 +131,6 @@ class PickerScreen extends StatelessWidget {
                       ),
                       Obx(() {
                         return TextFieldWidget(
-                          isFocus: controller.isFocusDes,
                           hint: "",
                           hintText: "Enter destination",
                           icon: Image.asset(
@@ -147,8 +145,12 @@ class PickerScreen extends StatelessWidget {
                         );
                       }),
                       Obx(() {
-                        if (controller.isFocusPick.value ||
-                            controller.isFocusDes.value) {
+                        if (controller.isFocusPick.value &&
+                                controller
+                                    .pickPlaceSearch.value.text.isNotEmpty ||
+                            controller.isFocusDes.value &&
+                                controller
+                                    .destinationSearch.value.text.isNotEmpty) {
                           return Container(
                             height: getHeight(context, height: 0.5),
                             width: getWidth(context, width: 1),

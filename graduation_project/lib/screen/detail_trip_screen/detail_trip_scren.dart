@@ -3,9 +3,12 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:graduation_project/app/util/const.dart';
 import 'package:graduation_project/manage/controller/detail_trip_controller.dart';
+import 'package:graduation_project/model/driver.dart';
 import 'package:graduation_project/model/request.dart';
+import 'package:graduation_project/repository/user_repo.dart';
 import 'package:graduation_project/widgets/button.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:url_launcher/url_launcher.dart' as urlLauncher;
 
 class DetailTripScreen extends GetView<DetailTripController> {
   const DetailTripScreen({super.key});
@@ -37,6 +40,84 @@ class DetailTripScreen extends GetView<DetailTripController> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (controller.request.driverId.isNotEmpty)
+                    FutureBuilder(
+                        future:
+                            UserRepo().getDriver(controller.request.driverId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          Driver driver = snapshot.data as Driver;
+                          return Container(
+                            width: getWidth(context, width: 1),
+                            height: getHeight(context, height: 0.1),
+                            color: Colors.white,
+                            child: Center(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(100)),
+                                      child: FadeInImage.memoryNetwork(
+                                          placeholder: kTransparentImage,
+                                          image: driver.avatar),
+                                    ),
+                                    spaceWidth(context),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            driver.userName,
+                                            style: smallTextStyle(context,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(driver.phoneNumber)
+                                        ],
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        await urlLauncher.canLaunchUrl(Uri(
+                                            scheme: 'tel',
+                                            path: driver.phoneNumber));
+                                      },
+                                      child: Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          border: Border.all(
+                                              width: 1, color: Colors.black),
+                                        ),
+                                        child: const Center(
+                                          child: Icon(Icons.phone),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                  spaceHeight(context),
                   Container(
                     height: getHeight(context, height: 0.95),
                     width: getWidth(context, width: 1),

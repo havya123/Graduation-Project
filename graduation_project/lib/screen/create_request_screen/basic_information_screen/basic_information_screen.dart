@@ -43,25 +43,29 @@ class BasicInformationScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
               child: Row(
                 children: [
-                  Column(
-                    children: [
-                      Icon(
-                        FontAwesomeIcons.locationDot,
-                        color: green,
-                      ),
-                      for (int i = 0; i < 7; i++) ...[
+                  Obx(() {
+                    int arrow =
+                        controllerRequest.pickPlace.value == null ? 6 : 8;
+                    return Column(
+                      children: [
                         Icon(
-                          Icons.arrow_drop_down,
-                          size: 14,
+                          FontAwesomeIcons.locationDot,
+                          color: green,
+                        ),
+                        for (int i = 0; i < arrow; i++) ...[
+                          Icon(
+                            Icons.arrow_drop_down,
+                            size: 14,
+                            color: green,
+                          ),
+                        ],
+                        Icon(
+                          FontAwesomeIcons.locationDot,
                           color: green,
                         ),
                       ],
-                      Icon(
-                        FontAwesomeIcons.locationDot,
-                        color: green,
-                      ),
-                    ],
-                  ),
+                    );
+                  }),
                   spaceWidth(context, width: 0.02),
                   Expanded(
                     child: Column(
@@ -237,7 +241,7 @@ class BasicInformationScreen extends StatelessWidget {
           }),
           spaceHeight(context),
           Text(
-            "Good Details",
+            "Parcel Details",
             style: smallTextStyle(context, color: Colors.white, size: 14),
           ),
           spaceHeight(context, height: 0.02),
@@ -257,7 +261,6 @@ class BasicInformationScreen extends StatelessWidget {
                   TextFieldWidget(
                     type: TextInputType.number,
                     borderRadius: 20,
-                    color: lightGrey,
                     hintText: 'Enter dimension *cm',
                     hint: '',
                     maxline: 1,
@@ -267,8 +270,7 @@ class BasicInformationScreen extends StatelessWidget {
                   TextFieldWidget(
                     type: TextInputType.number,
                     borderRadius: 20,
-                    color: lightGrey,
-                    hintText: 'Enter weight *Kg',
+                    hintText: 'Enter weight *g',
                     hint: '',
                     maxline: 1,
                     controller: controllerRequest.weightController,

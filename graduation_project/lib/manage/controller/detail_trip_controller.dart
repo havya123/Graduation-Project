@@ -190,15 +190,21 @@ class DetailTripController extends GetxController {
     DeviceTokenModel deviceTokenModel =
         await DeviceTokenRepo().getDeviceToken(request!.driverId);
     await NotificationService().sendNotification(
-        deviceTokenModel.deviceToken, 'Confirm success', 'Confirm success');
+        deviceTokenModel.deviceToken, 'Confirm success', 'Confirm success', {
+      'requestId': request.requestId,
+      'requestType': request.type,
+    });
   }
 
   Future<void> confirmPickupSuccessSaving() async {
     await RequestRepo().updateStatus(request!.requestId, 'on delivery');
     DeviceTokenModel deviceTokenModel =
         await DeviceTokenRepo().getDeviceToken(request!.driverId);
-    await NotificationService().sendNotification(deviceTokenModel.deviceToken,
-        'Confirm success', 'Confirm success saving');
+    await NotificationService().sendNotification(
+        deviceTokenModel.deviceToken, 'Confirm success', 'Confirm success', {
+      'requestId': request.requestId,
+      'requestType': request.type,
+    });
   }
 
   Future<void> confirmPickupMultiSuccess() async {
@@ -206,6 +212,9 @@ class DetailTripController extends GetxController {
     DeviceTokenModel deviceTokenModel =
         await DeviceTokenRepo().getDeviceToken(request.driverId);
     await NotificationService().sendNotification(
-        deviceTokenModel.deviceToken, 'Confirm success', 'Confirm success');
+        deviceTokenModel.deviceToken, 'Confirm success', 'Confirm success', {
+      'requestId': request.requestId,
+      'requestType': 'requestMulti',
+    });
   }
 }

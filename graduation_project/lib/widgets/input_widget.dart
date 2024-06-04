@@ -78,7 +78,7 @@ class TextFieldWidget extends StatelessWidget {
           fillColor: color,
           hintText: hintText,
           hintStyle: smallTextStyle(context, color: textColor),
-          // label:  Text(hint),
+          // label: Text(hint),
           // labelText: hint,
           labelStyle: TextStyle(
             color: textColor,

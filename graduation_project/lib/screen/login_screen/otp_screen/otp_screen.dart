@@ -39,20 +39,24 @@ class OTPScreen extends StatelessWidget {
                     ),
                   ),
                   spaceHeight(context),
-                  Container(
-                    width: getWidth(context, width: 0.7),
+                  SizedBox(
+                    width: getWidth(context, width: 1),
                     height: getHeight(context, height: 0.3),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.yellow),
-                  ),
-                  spaceHeight(context),
-                  const Text(
-                    "Enter Code",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "OTP Verification",
+                              style: largeTextStyle(context),
+                            ),
+                            spaceHeight(context),
+                            const Text(
+                              "Enter the verification code we just sent on your phone.",
+                            )
+                          ]),
+                    ),
                   ),
                   spaceHeight(context),
                   Pinput(

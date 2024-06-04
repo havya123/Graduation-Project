@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:graduation_project/app/util/const.dart';
 import 'package:graduation_project/extension/snackbar.dart';
 import 'package:graduation_project/manage/controller/create_multi_request_controller.dart';
@@ -46,6 +47,8 @@ class DetailInforMultiScreen extends StatelessWidget {
                   spaceHeight(context, height: 0.02),
                   TextFieldWidget(
                     borderRadius: 12,
+                    type: TextInputType.number,
+                    numberOfLetter: 10,
                     hintText: 'Enter sender phone',
                     hint: '',
                     controller: controller.senderPhone,
@@ -98,7 +101,9 @@ class DetailInforMultiScreen extends StatelessWidget {
                             spaceHeight(context, height: 0.02),
                             TextFieldWidget(
                               borderRadius: 12,
+                              type: TextInputType.number,
                               hintText: 'Enter receiver phone',
+                              numberOfLetter: 10,
                               hint: '',
                               controller: controller.listReceiverPhone[index],
                             ),
@@ -114,9 +119,6 @@ class DetailInforMultiScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // controller.listDestination.length == index + 1
-                    //     ? ButtonWidget(function: () {})
-                    //     : const SizedBox()
                   ],
                 );
               },
@@ -153,61 +155,3 @@ class DetailInforMultiScreen extends StatelessWidget {
     );
   }
 }
-          // Container(
-          //   width: double.infinity,
-          //   height: getHeight(context, height: 0.5),
-          //   decoration: BoxDecoration(
-          //     borderRadius: BorderRadius.circular(15),
-          //     color: const Color(0xff202020),
-          //   ),
-          //   child: Padding(
-          //     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          //     child: Column(
-          //       children: [
-          //         TextFieldWidget(
-          //           borderRadius: 20,
-          //           color: lightGrey,
-          //           hintText: 'Enter receiver name',
-          //           hint: '',
-          //           controller: requestController.receiverName,
-          //         ),
-          //         spaceHeight(context, height: 0.02),
-          //         TextFieldWidget(
-          //           borderRadius: 20,
-          //           color: lightGrey,
-          //           hintText: 'Enter receiver phone',
-          //           hint: '',
-          //           controller: requestController.receiverPhone,
-          //         ),
-          //         spaceHeight(context, height: 0.02),
-          //         TextFieldWidget(
-          //           maxline: 5,
-          //           borderRadius: 20,
-          //           color: lightGrey,
-          //           hintText: 'Note',
-          //           hint: '',
-          //           controller: requestController.receiverNote,
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          // spaceHeight(context, height: 0.06),
-          // Row(
-          //   children: [
-          //     Expanded(
-          //       child: ButtonWidget(
-          //         function: () => stepController.returnStep(),
-          //         textButton: "Cancel",
-          //       ),
-          //     ),
-          //     spaceWidth(context),
-          //     Expanded(
-          //       child: ButtonWidget(
-          //         function: () => stepController.nextStep(),
-          //         textButton: "Continue",
-          //       ),
-          //     ),
-          //   ],
-          // ),
-          // spaceHeight(context),

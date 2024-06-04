@@ -11,11 +11,12 @@ import 'package:graduation_project/app/store/services.dart';
 import 'package:graduation_project/app/util/key.dart';
 import 'package:graduation_project/firebase_options.dart';
 import 'package:graduation_project/manage/bindings/login_binding.dart';
+import 'package:graduation_project/manage/firebase_service/firebase_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
+  FirebaseService.firebaseApp = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   //clearData();

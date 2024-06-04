@@ -10,6 +10,7 @@ import 'package:graduation_project/app/store/app_store.dart';
 import 'package:graduation_project/app/store/services.dart';
 import 'package:graduation_project/app/util/key.dart';
 import 'package:graduation_project/extension/snackbar.dart';
+import 'package:graduation_project/main.dart';
 import 'package:graduation_project/manage/controller/geofire_assistant.dart';
 import 'package:graduation_project/manage/firebase_service/notification_service.dart';
 import 'package:graduation_project/model/driver_active_nearby.dart';
@@ -32,8 +33,10 @@ class TrackingController extends GetxController
   AnimationController? animationController;
   Animation<double>? radiusAnimation;
   static bool requestAccepted = false;
+  RxString driverAccept = "".obs;
 
   Future<TrackingController> init() async {
+    await clearData();
     waiting.value = true;
     NotificationService.onRequestAccept = () => stopAnimate();
     String? request = Get.parameters['requestId'];
@@ -65,7 +68,6 @@ class TrackingController extends GetxController
 
       waiting.value = false;
     }
-
     return this;
   }
 
@@ -118,29 +120,10 @@ class TrackingController extends GetxController
   }
 
   Future<void> getAllRequest() async {
-    List<Request> requests = await RequestRepo().getAllRequest(AppStore.to.uid);
+    List<Request> requests =
+        await RequestRepo().getAllRequest(AppStore.to.uid.value);
     listRequest.value = requests;
   }
-
-  // void addCircle(LatLng lng) {
-  //   bool hasMyPositionCircle =
-  //       circleSet.any((circle) => circle.circleId.value == "My Circle");
-  //   if (hasMyPositionCircle) {
-  //     circleSet.removeWhere((circle) => circle.circleId.value == "My Circle");
-  //   }
-
-  //   Circle myCircle = Circle(
-  //     circleId: const CircleId("My Circle"),
-  //     center: LatLng(lng.latitude, lng.longitude),
-  //     radius: radiusAnimation.value,
-  //     fillColor: Colors.blue.withOpacity(0.3),
-  //     strokeColor: Colors.blue,
-  //     strokeWidth: 1,
-  //     visible: true,
-  //   );
-
-  //   circleSet.add(myCircle);
-  // }
 
   void addCircle(LatLng lng) {
     bool hasMyPositionCircle =
@@ -237,7 +220,7 @@ class TrackingController extends GetxController
     }
 
     try {
-      Geofire.queryAtLocation(lat, lng, 2)!.listen((event) async {
+      Geofire.queryAtLocation(lat, lng, 3)!.listen((event) async {
         if (event != null) {
           var callBack = event['callBack'];
           switch (callBack) {
@@ -311,10 +294,10 @@ class TrackingController extends GetxController
           return;
         }
         MyDialogs.showProgress();
-        await RequestRepo().deleteRequest(currentRequest.value!.requestId);
-        await ParcelRepo().deleteParcel(currentRequest.value!.parcelId);
+        await RequestRepo()
+            .updateStatus(currentRequest.value!.requestId, 'cancel');
         MyDialogs.success(
-          msg: "You have deleted request successfully",
+          msg: "You have canceled request successfully",
         );
         AppStore.to.lastedRequest.value == null;
         AppStore.to.newRequest == "";

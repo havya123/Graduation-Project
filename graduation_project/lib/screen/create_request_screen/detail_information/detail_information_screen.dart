@@ -36,7 +36,6 @@ class DetailInformationScreen extends StatelessWidget {
                 children: [
                   TextFieldWidget(
                     borderRadius: 20,
-                    color: lightGrey,
                     hintText: 'Enter sender name',
                     hint: '',
                     controller: requestController.senderName,
@@ -44,8 +43,9 @@ class DetailInformationScreen extends StatelessWidget {
                   spaceHeight(context, height: 0.02),
                   TextFieldWidget(
                     borderRadius: 20,
-                    color: lightGrey,
+                    type: TextInputType.number,
                     hintText: 'Enter sender phone',
+                    numberOfLetter: 10,
                     hint: '',
                     controller: requestController.senderPhone,
                   ),
@@ -53,7 +53,6 @@ class DetailInformationScreen extends StatelessWidget {
                   TextFieldWidget(
                     maxline: 5,
                     borderRadius: 20,
-                    color: lightGrey,
                     hintText: 'Note',
                     hint: '',
                     controller: requestController.senderNote,
@@ -81,7 +80,6 @@ class DetailInformationScreen extends StatelessWidget {
                 children: [
                   TextFieldWidget(
                     borderRadius: 20,
-                    color: lightGrey,
                     hintText: 'Enter receiver name',
                     hint: '',
                     controller: requestController.receiverName,
@@ -89,8 +87,9 @@ class DetailInformationScreen extends StatelessWidget {
                   spaceHeight(context, height: 0.02),
                   TextFieldWidget(
                     borderRadius: 20,
-                    color: lightGrey,
+                    type: TextInputType.number,
                     hintText: 'Enter receiver phone',
+                    numberOfLetter: 10,
                     hint: '',
                     controller: requestController.receiverPhone,
                   ),
@@ -98,7 +97,6 @@ class DetailInformationScreen extends StatelessWidget {
                   TextFieldWidget(
                     maxline: 5,
                     borderRadius: 20,
-                    color: lightGrey,
                     hintText: 'Note',
                     hint: '',
                     controller: requestController.receiverNote,

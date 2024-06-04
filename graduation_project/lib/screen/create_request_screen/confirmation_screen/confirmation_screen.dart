@@ -212,7 +212,7 @@ class ConfirmationScreen extends StatelessWidget {
                           style: smallTextStyle(context, color: Colors.white),
                         ),
                         Text(
-                          "${requestController.weightController.text}kg",
+                          "${requestController.weightController.text}g",
                           style: smallTextStyle(context, color: Colors.white),
                         ),
                       ],

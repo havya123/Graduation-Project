@@ -15,6 +15,7 @@ import 'package:graduation_project/model/request.dart';
 import 'package:graduation_project/model/request_multi.dart';
 
 class GeoFireAssistant extends GetxController {
+  static bool isSent = false;
   static List<DriverActiveNearby> activeDriver = [];
   static Map<String, dynamic> driverSent = {};
 
@@ -44,6 +45,7 @@ class GeoFireAssistant extends GetxController {
   }
 
   Future<void> sendRequestToDriver(LatLng senderAddress) async {
+    if (isSent == true) return;
     String requestId = AppStore.to.lastedRequest.value!.requestId;
     String deviceToken = AppStore.to.deviceToken.value;
     String requestType = "";
@@ -77,12 +79,15 @@ class GeoFireAssistant extends GetxController {
 
     for (var driver in activeDriver) {
       if (!driverSent[requestId]!.contains(driver.driverId)) {
+        isSent = true;
         driverReceiver = driver;
         DeviceTokenModel deviceTokenModel = await DeviceTokenRepo()
             .getDeviceToken(driverReceiver.driverId as String);
 
         await NotificationService().sendNotification(
-            deviceTokenModel.deviceToken, 'A new request coming', {
+            deviceTokenModel.deviceToken,
+            'A new request coming',
+            'You have new request.', {
           'requestId': requestId,
           'requestType': requestType,
           'deviceToken': deviceToken
