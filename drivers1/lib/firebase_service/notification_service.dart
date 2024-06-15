@@ -30,22 +30,30 @@ class NotificationService {
       Map<String, dynamic> messageData = jsonDecode(message.data['body']);
       if (message.notification?.title == "A new request coming") {
         if (AppStore.to.onDelivery.value == true) {
-          await declineRequest(messageData['deviceToken']);
+          await declineRequest(
+            messageData['deviceToken'],
+          );
           return;
         }
         if (messageData['requestType'] == "saving" &&
             messageData['requestType'] != AppStore.to.mode.value) {
-          await declineRequest(messageData['deviceToken']);
+          await declineRequest(
+            messageData['deviceToken'],
+          );
           return;
         }
 
         if (messageData['requestType'] == "express" &&
             messageData['requestType'] != AppStore.to.mode.value) {
-          await declineRequest(messageData['deviceToken']);
+          await declineRequest(
+            messageData['deviceToken'],
+          );
           return;
         }
-        if (AppStore.to.listRequestSaving.length >= 5) {
-          await declineRequest(messageData['deviceToken']);
+        if (AppStore.to.listRequestSaving.length >= 10) {
+          await declineRequest(
+            messageData['deviceToken'],
+          );
           return;
         }
 
@@ -75,94 +83,25 @@ class NotificationService {
           Get.offNamed(RouteName.deliveryMultiRoute);
           return;
         }
-        if (messageData['requestType'] == "saving") {
-          var controller = Get.find<DeliverySavingController>();
-          if (controller.waitingConfirm.value) {
-            controller.listDoneSaving.add(controller.nameLocation.value);
-            controller.index++;
-            controller.changeLocation();
-            AppServices.to.setString(
-                MyKey.listDoneSaving, jsonEncode(controller.listDoneSaving));
-            controller.waitingConfirm.value = false;
-            await RequestRepo()
-                .updateStatus(messageData['requestId'], 'on delivery');
-          }
-          return;
+      }
+
+      if (message.notification?.title == "Confirm success" &&
+          AppStore.to.onDelivery.value == true &&
+          messageData['requestType'] == "saving") {
+        var controller = Get.find<DeliverySavingController>();
+        if (controller.waitingConfirm.value) {
+          controller.listDoneSaving.add(controller.nameLocation.value);
+          controller.index++;
+          controller.changeLocation();
+          AppServices.to.setString(
+              MyKey.listDoneSaving, jsonEncode(controller.listDoneSaving));
+          controller.waitingConfirm.value = false;
+          await RequestRepo()
+              .updateStatus(messageData['requestId'], 'on delivery');
         }
+        return;
       }
     });
-
-    // FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-    //   if (AppStore.to.currentRequest.value == null &&
-    //       AppStore.to.mode.value == "express") {
-    //     if (message.notification != null) {
-    //       if (AppStore.to.onDelivery.value == true) {
-    //         if (message.notification?.body == 'Confirm success') {
-    //           if (AppStore.to.requestType.value == 'express') {
-    //             PickupController.waitingConfirm.value = false;
-    //             Get.toNamed(RouteName.deliveryRoute);
-    //             return;
-    //           }
-    //           if (AppStore.to.requestType.value == 'requestMulti') {
-    //             PickupController.waitingConfirm.value = false;
-    //             Get.toNamed(RouteName.deliveryMultiRoute);
-    //             return;
-    //           }
-    //         }
-    //         Map<String, dynamic> response =
-    //             jsonDecode(message.notification?.body as String);
-    //         await declineRequest(response['deviceToken']);
-    //         return;
-    //       }
-    //       if (message.notification?.body != null) {
-    //         Map<String, dynamic> response =
-    //             jsonDecode(message.notification?.body as String);
-    //         if (response['requestType'] == AppStore.to.mode.value ||
-    //             response['requestType'] == "requestMulti") {
-    //           HomeController.to.newRequestComing.value = response['requestId'];
-    //           HomeController.to.requestType.value = response['requestType'];
-    //           AppStore.to.requestType.value = response['requestType'];
-    //         } else {
-    //           await declineRequest(response['deviceToken']);
-    //         }
-
-    //         return;
-    //       }
-    //     }
-    //   }
-    //   if (AppStore.to.mode.value == "saving") {
-    //     if (AppStore.to.onDelivery.value == true) {
-    //       if (message.notification?.body == "Confirm success saving") {
-    //         var controller = Get.find<DeliverySavingController>();
-    //         if (controller.waitingConfirm.value) {
-    //           controller.listDoneSaving.add(controller.nameLocation.value);
-    //           controller.index++;
-    //           controller.changeLocation();
-    //           AppServices.to.setString(
-    //               MyKey.listDoneSaving, jsonEncode(controller.listDoneSaving));
-    //           controller.waitingConfirm.value = false;
-    //         }
-    //         return;
-    //       }
-    //       Map<String, dynamic> response =
-    //           jsonDecode(message.notification?.body as String);
-    //       await declineRequest(response['deviceToken']);
-    //       return;
-    //     }
-
-    //     if (message.notification?.body != null) {
-    //       Map<String, dynamic> response =
-    //           jsonDecode(message.notification?.body as String);
-    //       if (response['requestType'] == AppStore.to.mode.value ||
-    //           response['requestType'] == "requestMulti") {
-    //         HomeController.to.newRequestComing.value = response['requestId'];
-    //         HomeController.to.requestType.value = response['requestType'];
-    //         AppStore.to.requestType.value = response['requestType'];
-    //       }
-    //       return;
-    //     }
-    //   }
-    // });
   }
 
   static String firebaseMessagingScope =

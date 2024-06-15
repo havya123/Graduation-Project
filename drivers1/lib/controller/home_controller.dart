@@ -278,6 +278,7 @@ class HomeController extends GetxController {
 
         AppServices.to.setString(
             MyKey.onDelivery, jsonEncode(AppStore.to.onDelivery.value));
+        resetCountDown();
       }
     } on FirebaseException catch (e) {
       if (e.code == 'not-found') {
@@ -292,7 +293,7 @@ class HomeController extends GetxController {
 
   Future<void> acceptRequestSaving() async {
     MyDialogs.showProgress();
-    if (listRequestSaving.length <= 5) {
+    if (listRequestSaving.length <= 10) {
       if (second.value != 0) {
         await RequestRepo()
             .updateDriverRequest(newRequestComing.value, AppStore.to.uid.value);
@@ -315,6 +316,7 @@ class HomeController extends GetxController {
             MyKey.listRequestSaving, jsonEncode(listRequestSaving.toList()));
         HomeController.to.newRequestComing.value = "";
         HomeController.to.requestType.value = "";
+        resetCountDown();
         Get.back();
       }
     } else {
@@ -351,6 +353,7 @@ class HomeController extends GetxController {
         AppStore.to.onDelivery.value = true;
         await AppServices.to.setString(
             MyKey.onDelivery, jsonEncode(AppStore.to.onDelivery.value));
+        resetCountDown();
       }
     } on FirebaseException catch (e) {
       if (e.code == 'not-found') {

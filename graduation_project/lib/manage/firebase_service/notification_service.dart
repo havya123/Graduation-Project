@@ -43,11 +43,11 @@ class NotificationService {
               AppStore.to.lastedRequest.value!.senderAddress['lat'],
               AppStore.to.lastedRequest.value!.senderAddress['lng']);
           GeoFireAssistant().sendRequestToDriver(currentRequest);
-
           return;
         }
         if (message.notification!.title == "Request Accept") {
-          // TrackingController.requq2w1.estAccepted = true;
+          GeoFireAssistant.isSent = false;
+          TrackingController.requestAccepted = true;
           GeoFireAssistant.driverSent.clear();
           AppServices.to.removeString(MyKey.driverSent);
           showNotification(message);

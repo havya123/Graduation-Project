@@ -25,12 +25,12 @@ class TrackingScreen extends GetView<TrackingController> {
 
             if (controller.currentRequest.value == null) {
               requestPosition = LatLng(
-                  controller.currentRequestMulti.value!.senderAddress['lat'],
-                  controller.currentRequestMulti.value!.senderAddress['lng']);
+                  controller.currentRequestMulti.value?.senderAddress['lat'],
+                  controller.currentRequestMulti.value?.senderAddress['lng']);
             } else {
               requestPosition = LatLng(
-                  controller.currentRequest.value!.senderAddress['lat'],
-                  controller.currentRequest.value!.senderAddress['lng']);
+                  controller.currentRequest.value?.senderAddress['lat'],
+                  controller.currentRequest.value?.senderAddress['lng']);
             }
             return Stack(
               children: [

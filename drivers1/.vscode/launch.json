@@ -1,0 +1,31 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "drivers1",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "RMX2032",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "e5a2f99"
+        },
+        {
+            "name": "R3CN80BQBVV",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "R3CN80BQBVV"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Compound",
+            "configurations": ["RMX2032","R3CN80BQBVV"]
+        }
+    ]
+}

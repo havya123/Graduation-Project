@@ -41,6 +41,7 @@ class TrackingController extends GetxController
     NotificationService.onRequestAccept = () => stopAnimate();
     String? request = Get.parameters['requestId'];
     String? type = Get.parameters['type'];
+
     await createUserMarker();
     await getRequest(request, type);
 
@@ -54,37 +55,30 @@ class TrackingController extends GetxController
       addMarker(LatLng(currentRequest.value!.senderAddress['lat'],
           currentRequest.value!.senderAddress['lng']));
       waiting.value = false;
+      return this;
     }
-    if (type != null) {
-      if (currentRequestMulti.value!.driverId.isEmpty) {
-        initAnimate();
-        addCircle(LatLng(currentRequestMulti.value!.senderAddress['lat'],
-            currentRequestMulti.value!.senderAddress['lng']));
-      }
-      refreshGeo();
 
-      addMarker(LatLng(currentRequestMulti.value!.senderAddress['lat'],
+    if (currentRequestMulti.value!.driverId.isEmpty) {
+      initAnimate();
+      addCircle(LatLng(currentRequestMulti.value!.senderAddress['lat'],
           currentRequestMulti.value!.senderAddress['lng']));
-
-      waiting.value = false;
     }
+    refreshGeo();
+
+    addMarker(LatLng(currentRequestMulti.value!.senderAddress['lat'],
+        currentRequestMulti.value!.senderAddress['lng']));
+
+    waiting.value = false;
+
     return this;
   }
 
   void refreshGeo() {
     initializeGeoFireListener();
-    if (GeoFireAssistant.activeDriver.isEmpty) {
-      Future.delayed(const Duration(seconds: 15), () {
-        refreshGeo();
-      });
-    }
+    Future.delayed(const Duration(seconds: 15), () {
+      refreshGeo();
+    });
   }
-
-  @override
-  // void onInit() async {
-  //   await GeoFireAssistant()
-  //       .sendRequestToDriver(const LatLng(21412421, 2414124));
-  // }
 
   @override
   void onClose() {
@@ -107,6 +101,7 @@ class TrackingController extends GetxController
   void stopAnimate() async {
     await updateCurrentRequest();
     circleSet.clear();
+    Get.back();
   }
 
   Future<void> updateCurrentRequest() async {
@@ -236,11 +231,12 @@ class TrackingController extends GetxController
                   LatLng currentRequest = LatLng(lat, lng);
                   await GeoFireAssistant().sendRequestToDriver(currentRequest);
                 }
-              } else {
-                if (currentRequestMulti.value!.driverId.isEmpty) {
-                  LatLng currentRequest = LatLng(lat, lng);
-                  await GeoFireAssistant().sendRequestToDriver(currentRequest);
-                }
+                return;
+              }
+              if (currentRequestMulti.value!.driverId.isEmpty) {
+                LatLng currentRequest = LatLng(lat, lng);
+                await GeoFireAssistant().sendRequestToDriver(currentRequest);
+                return;
               }
 
               break;

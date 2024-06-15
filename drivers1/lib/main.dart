@@ -23,7 +23,6 @@ void main() async {
       Permission.locationWhenInUse.request();
     }
   });
-  //clearData();
   await Get.putAsync(
     () => AppServices().init(),
   );
@@ -32,8 +31,6 @@ void main() async {
   await controller.init();
   await NotificationService().getDeviceToken();
   await NotificationService().init();
-
-  // await Get.putAsync(() => DeliveryController().onInit());
 
   runApp(const MyApp());
 }

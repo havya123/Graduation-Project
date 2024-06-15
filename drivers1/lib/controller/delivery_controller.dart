@@ -57,6 +57,7 @@ class DeliveryController extends GetxController {
           currentPosition!.value.latitude, currentPosition!.value.longitude));
       await drawPolyline();
       _calculateBounds();
+      checkDistance();
       waiting.value = false;
     }
     return this;

@@ -5,5 +5,5 @@ class MyKey {
   static String newRequest = "";
   static String deviceToken = "deviceToken";
   static String driverSent = "driverSent";
-  static String ggApiKey = "AIzaSyCvoTNDnBv3zyffnfJxqCgngZJ_HjDL4CI";
+  static String ggApiKey = "AIzaSyAdz_LEIlbi2Ylni1hfUUdAcipAFezwB2k";
 }

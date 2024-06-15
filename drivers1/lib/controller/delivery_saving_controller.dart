@@ -110,10 +110,11 @@ class DeliverySavingController extends GetxController {
       listEndPoint.add(LatLng(listRequest[i].receiverAddress['lat'],
           listRequest[i].receiverAddress['lng']));
     }
+
     LatLng startPoint =
         _findNearestLatLng(currentPosition!.value, listStartPoint);
+    int indexLatLng = getIndexLatLng(listStartPoint, startPoint, []);
 
-    int indexLatLng = getIndexLatLng(listStartPoint, startPoint);
     listPointArranged.add(startPoint);
     addListDestination(startPoint);
 
@@ -123,6 +124,8 @@ class DeliverySavingController extends GetxController {
     List<LatLng> listTemp = [];
     listTemp.add(listEndPoint[indexLatLng]);
     listTemp.addAll(listStartPointTemp);
+
+    List<int> usedStartIndexes = [indexLatLng];
 
     while (listTemp.isNotEmpty) {
       if (listTemp.length == 1) {
@@ -137,10 +140,13 @@ class DeliverySavingController extends GetxController {
       listTemp.remove(startPoint);
 
       if (listStartPoint.contains(startPoint)) {
-        int indexLatLng = getIndexLatLng(listStartPoint, startPoint);
+        indexLatLng =
+            getIndexLatLng(listStartPoint, startPoint, usedStartIndexes);
         listTemp.add(listEndPoint[indexLatLng]);
+        usedStartIndexes.add(indexLatLng);
       }
     }
+
     Map<String, dynamic> optimize = {
       'listPointArranged': listPointArranged,
       'listDestination': listDestination
@@ -344,8 +350,14 @@ class DeliverySavingController extends GetxController {
     return distance; // Khoảng cách tính bằng mét
   }
 
-  int getIndexLatLng(List<LatLng> listLatLng, LatLng latLng) {
-    return listLatLng.indexOf(latLng);
+  int getIndexLatLng(
+      List<LatLng> listLatLng, LatLng latLng, List<int> usedIndexes) {
+    for (int i = 0; i < listLatLng.length; i++) {
+      if (listLatLng[i] == latLng && !usedIndexes.contains(i)) {
+        return i;
+      }
+    }
+    return -1; // In case no valid index is found (which shouldn't happen if used correctly)
   }
 
   Future<void> openGoogleMapsDirections() async {
