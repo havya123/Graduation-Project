@@ -50,7 +50,7 @@ class NotificationService {
           );
           return;
         }
-        if (AppStore.to.listRequestSaving.length >= 10) {
+        if (AppStore.to.listRequestSaving.length >= 5) {
           await declineRequest(
             messageData['deviceToken'],
           );
@@ -90,6 +90,7 @@ class NotificationService {
           messageData['requestType'] == "saving") {
         var controller = Get.find<DeliverySavingController>();
         if (controller.waitingConfirm.value) {
+          controller.waitingConfirm.value = false;
           controller.listDoneSaving.add(controller.nameLocation.value);
           controller.index++;
           controller.changeLocation();

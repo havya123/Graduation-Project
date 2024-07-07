@@ -1,8 +1,10 @@
 import 'package:drivers/app/route/route_name.dart';
 import 'package:drivers/app/store/app_store.dart';
 import 'package:drivers/app/util/const.dart';
+import 'package:drivers/controller/delivery_multi_controller.dart';
 import 'package:drivers/controller/pickup_controller.dart';
 import 'package:drivers/model/request.dart';
+import 'package:drivers/model/request_multi.dart';
 import 'package:drivers/screens/delivery_multi_screen/detail_widget/detail_widget.dart';
 import 'package:drivers/screens/home_screen/detail_widget/detail_widget.dart';
 import 'package:drivers/widgets/button.dart';
@@ -43,8 +45,10 @@ class PickupScreen extends GetView<PickupController> {
                               color: Colors.green.shade400),
                         ),
                         Text(
-                          AppStore.to.currentRequest.value!
-                              .senderAddress['senderAddres'],
+                          AppStore.to.currentRequest.value == null
+                              ? ""
+                              : AppStore.to.currentRequest.value
+                                  .senderAddress['senderAddres'],
                           maxLines: 3,
                           textAlign: TextAlign.center,
                           style: mediumTextStyle(context, color: Colors.white),
@@ -118,8 +122,9 @@ class PickupScreen extends GetView<PickupController> {
                               onTap: () async {
                                 await urlLauncher.launchUrl(Uri(
                                     scheme: 'tel',
-                                    path: AppStore
-                                        .to.currentRequest.value!.senderPhone));
+                                    path: AppStore.to.currentRequest.value
+                                            .senderPhone ??
+                                        ""));
                               },
                               child: Container(
                                 height: getHeight(context, height: 0.1),
@@ -149,8 +154,9 @@ class PickupScreen extends GetView<PickupController> {
                               onTap: () async {
                                 await urlLauncher.launchUrl(Uri(
                                     scheme: 'sms',
-                                    path: AppStore
-                                        .to.currentRequest.value!.senderPhone));
+                                    path: AppStore.to.currentRequest.value
+                                            .senderPhone ??
+                                        ""));
                               },
                               child: Container(
                                 height: getHeight(context, height: 0.1),
@@ -282,47 +288,94 @@ class PickupScreen extends GetView<PickupController> {
                                                     child: Column(
                                                       children: [
                                                         Expanded(
-                                                          child: Container(
-                                                            decoration: BoxDecoration(
-                                                                border: Border.all(
-                                                                    color: Colors
-                                                                        .black,
-                                                                    width:
-                                                                        0.2)),
-                                                            child: const Center(
-                                                              child: Text(
-                                                                  "Sender does not reply"),
+                                                          child:
+                                                              GestureDetector(
+                                                            onTap: () async {
+                                                              if (AppStore
+                                                                      .to
+                                                                      .currentRequest
+                                                                      .value
+                                                                  is RequestMulti) {
+                                                                controller
+                                                                    .showCancelDialogMulti(
+                                                                        context);
+                                                              } else {
+                                                                controller
+                                                                    .showCancelDialog(
+                                                                        context);
+                                                              }
+                                                            },
+                                                            child: Container(
+                                                              decoration: BoxDecoration(
+                                                                  border: Border.all(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      width:
+                                                                          0.2)),
+                                                              child:
+                                                                  const Center(
+                                                                child: Text(
+                                                                    "Sender does not reply"),
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
                                                         Expanded(
-                                                          child: Container(
-                                                            decoration: BoxDecoration(
-                                                                border: Border.all(
-                                                                    color: Colors
-                                                                        .black,
-                                                                    width:
-                                                                        0.2)),
-                                                            child: const Center(
-                                                              child: Text(
-                                                                  "Sender does not want to send "),
+                                                          child:
+                                                              GestureDetector(
+                                                            onTap: () async {
+                                                              if (AppStore
+                                                                      .to
+                                                                      .currentRequest
+                                                                      .value
+                                                                  is RequestMulti) {
+                                                                controller
+                                                                    .showCancelDialogMulti(
+                                                                        context);
+                                                              } else {
+                                                                controller
+                                                                    .showCancelDialog(
+                                                                        context);
+                                                              }
+                                                            },
+                                                            child: Container(
+                                                              decoration: BoxDecoration(
+                                                                  border: Border.all(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      width:
+                                                                          0.2)),
+                                                              child:
+                                                                  const Center(
+                                                                child: Text(
+                                                                    "Sender does not want to send "),
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
                                                         Expanded(
-                                                          child: Container(
-                                                            decoration: BoxDecoration(
-                                                                border: Border.all(
-                                                                    color: Colors
-                                                                        .black,
-                                                                    width:
-                                                                        0.2)),
-                                                            child: const Center(
-                                                              child: Text(
-                                                                "Product's size is not the same with the request information ",
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
+                                                          child:
+                                                              GestureDetector(
+                                                            onTap: () async {
+                                                              controller
+                                                                  .showCancelDialog(
+                                                                      context);
+                                                            },
+                                                            child: Container(
+                                                              decoration: BoxDecoration(
+                                                                  border: Border.all(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      width:
+                                                                          0.2)),
+                                                              child:
+                                                                  const Center(
+                                                                child: Text(
+                                                                  "Product's size is not the same with the request information ",
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                ),
                                                               ),
                                                             ),
                                                           ),

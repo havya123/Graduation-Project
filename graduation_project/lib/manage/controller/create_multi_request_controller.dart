@@ -24,6 +24,7 @@ import 'dart:math' as math;
 import '../../app/util/key.dart';
 
 class CreateRequestMultiController extends GetxController {
+  RxDouble zoomLevel = 15.0.obs;
   static CreateRequestMultiController get to =>
       Get.find<CreateRequestMultiController>();
   RxInt activateStep = 0.obs;
@@ -139,12 +140,16 @@ class CreateRequestMultiController extends GetxController {
     try {
       myController?.animateCamera(
         CameraUpdate.newCameraPosition(
-          CameraPosition(target: lng, zoom: 15),
+          CameraPosition(target: lng, zoom: zoomLevel.value),
         ),
       );
     } catch (e) {
       MyDialogs.error(msg: "Something went wrong");
     }
+  }
+
+  void changeZoomLevel(double newZoomLevel) {
+    zoomLevel.value = newZoomLevel;
   }
 
   void addMarker(LatLng lng) {

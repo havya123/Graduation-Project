@@ -1,7 +1,6 @@
 import 'package:drivers/app/util/const.dart';
 import 'package:drivers/model/request_multi.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class HistoryMultiWidget extends StatelessWidget {
   HistoryMultiWidget({super.key, required this.request});

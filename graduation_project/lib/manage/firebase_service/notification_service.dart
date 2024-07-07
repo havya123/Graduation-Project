@@ -20,6 +20,7 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
+    await getAccessToken();
     initialize();
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     await messaging.requestPermission(
@@ -38,7 +39,6 @@ class NotificationService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.notification != null) {
         if (message.notification!.title == "Request Declined") {
-          GeoFireAssistant.isSent = false;
           LatLng currentRequest = LatLng(
               AppStore.to.lastedRequest.value!.senderAddress['lat'],
               AppStore.to.lastedRequest.value!.senderAddress['lng']);
@@ -46,7 +46,6 @@ class NotificationService {
           return;
         }
         if (message.notification!.title == "Request Accept") {
-          GeoFireAssistant.isSent = false;
           TrackingController.requestAccepted = true;
           GeoFireAssistant.driverSent.clear();
           AppServices.to.removeString(MyKey.driverSent);

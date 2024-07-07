@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:drivers/app/route/route_name.dart';
 import 'package:drivers/app/store/app_store.dart';
+import 'package:drivers/app/store/services.dart';
 import 'package:drivers/app/util/key.dart';
 import 'package:drivers/extension/snackbar.dart';
 import 'package:drivers/firebase_service/notification_service.dart';
@@ -307,12 +308,54 @@ class DeliveryController extends GetxController {
     await NotificationService().sendNotification(
         deviceTokenModel.deviceToken, "Complete delivery", "Complete delivery");
     AppStore.to.currentRequest.value = null;
-    var prefs = await SharedPreferences.getInstance();
-    prefs.remove(MyKey.currentRequest);
+    AppServices.to.removeString(MyKey.currentRequest);
     AppStore.to.onDelivery.value = false;
-    prefs.remove(MyKey.onDelivery);
+    AppServices.to.removeString(MyKey.onDelivery);
     loading.value = false;
     Future.delayed(const Duration(seconds: 1),
         () => Get.offNamed(RouteName.categoryRoute));
+  }
+
+  Future<void> cancelRequest() async {
+    await RequestRepo()
+        .cancelRequest(AppStore.to.currentRequest.value.requestId);
+
+    AppStore.to.currentRequest.value = null;
+    AppServices.to.removeString(MyKey.currentRequest);
+    AppStore.to.onDelivery.value = false;
+    AppServices.to.removeString(MyKey.onDelivery);
+    Get.offNamed(RouteName.categoryRoute);
+  }
+
+  void showCancelDialog(context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Center(
+                child: Text('Are you sure you want to cancel this?')),
+            content: const SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text("Are you sure you want to cancel this?"),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Get.back();
+                },
+              ),
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () async {
+                  await cancelRequest();
+                },
+              ),
+            ],
+          );
+        });
   }
 }

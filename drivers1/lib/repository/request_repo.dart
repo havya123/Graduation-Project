@@ -240,4 +240,16 @@ class RequestRepo {
     }
     return listRequest;
   }
+
+  Future<void> cancelRequest(String requestId) async {
+    await FirebaseService.requestRef
+        .doc(requestId)
+        .update({'statusRequest': 'cancel'});
+  }
+
+  Future<void> cancelRequestMulti(String requestId) async {
+    await FirebaseService.requestMultiRef
+        .doc(requestId)
+        .update({'statusRequest': 'cancel'});
+  }
 }

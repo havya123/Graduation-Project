@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:ui' as ui;
+
 import 'package:drivers/app/route/route_name.dart';
 import 'package:drivers/app/store/app_store.dart';
 import 'package:drivers/app/store/services.dart';
@@ -21,7 +22,6 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import 'package:url_launcher/url_launcher.dart' as urlLauncher;
 
 class DeliveryMultiController extends GetxController {
@@ -388,5 +388,48 @@ class DeliveryMultiController extends GetxController {
       }
     }
     return true;
+  }
+
+  Future<void> cancelRequestMulti() async {
+    await RequestRepo()
+        .cancelRequestMulti(AppStore.to.currentRequest.value.requestId);
+
+    AppStore.to.currentRequest.value = null;
+    AppServices.to.removeString(MyKey.currentRequest);
+    AppStore.to.onDelivery.value = false;
+    AppServices.to.removeString(MyKey.onDelivery);
+    Get.offNamed(RouteName.categoryRoute);
+  }
+
+  void showCancelDialogMulti(context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Center(
+                child: Text('Are you sure you want to cancel this?')),
+            content: const SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text("Are you sure you want to cancel this?"),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Get.back();
+                },
+              ),
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () async {
+                  await cancelRequestMulti();
+                },
+              ),
+            ],
+          );
+        });
   }
 }

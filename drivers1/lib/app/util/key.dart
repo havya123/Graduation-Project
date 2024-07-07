@@ -6,7 +6,7 @@ class MyKey {
   static String currentRequest = "currentRequest";
   static String onDelivery = "onDelivery";
   static String modeSaved = "modeSaved";
-  static String ggApiKey = "AIzaSyAdz_LEIlbi2Ylni1hfUUdAcipAFezwB2k";
+  static String ggApiKey = "AIzaSyB1_8buSIcZB8LEKme1lGm3cCcrvnoIt4Y";
   static String listDone = "listDone";
   static String listDoneSaving = "listDoneSaving";
   static String listRequestSaving = "listRequestSaving";

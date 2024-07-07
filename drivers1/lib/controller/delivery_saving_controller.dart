@@ -361,10 +361,16 @@ class DeliverySavingController extends GetxController {
   }
 
   Future<void> openGoogleMapsDirections() async {
+    LatLng destination;
     LatLng userPosition = LatLng(
         currentPosition!.value.latitude, currentPosition!.value.longitude);
-    LatLng destination = LatLng(currentRequest.value!.receiverAddress['lat'],
-        currentRequest.value!.receiverAddress['lng']);
+    if (isPick.value = true) {
+      destination = LatLng(currentRequest.value!.senderAddress['lat'],
+          currentRequest.value!.senderAddress['lng']);
+    } else {
+      destination = LatLng(currentRequest.value!.receiverAddress['lat'],
+          currentRequest.value!.receiverAddress['lng']);
+    }
 
     String url =
         'https://www.google.com/maps/dir/?api=1&origin=${userPosition.latitude},${userPosition.longitude}&destination=${destination.latitude},${destination.longitude}';
@@ -482,6 +488,7 @@ class DeliverySavingController extends GetxController {
       AppServices.to.removeString(MyKey.listArranged);
       AppServices.to.removeString(MyKey.listDoneSaving);
       AppServices.to.removeString(MyKey.listRequestSaving);
+      AppStore.to.listRequestSaving.clear();
       Get.offNamed(RouteName.categoryRoute);
       return;
     }
@@ -492,5 +499,45 @@ class DeliverySavingController extends GetxController {
     changeLocation();
     Get.back();
     Get.back();
+  }
+
+  Future<void> cancelRequestSaving() async {
+    MyDialogs.showProgress();
+    await RequestRepo().cancelRequest(currentRequest.value!.requestId);
+    listDestination.removeWhere((element) =>
+        element == currentRequest.value!.senderAddress['senderAddres']);
+    listDestination.removeWhere((element) =>
+        element == currentRequest.value!.receiverAddress['receiverAddress']);
+    listPointArranged.removeWhere((element) =>
+        element.latitude == currentRequest.value!.senderAddress['lat']);
+    listPointArranged.removeWhere((element) =>
+        element.longitude == currentRequest.value!.senderAddress['lng']);
+    listPointArranged.removeWhere((element) =>
+        element.latitude == currentRequest.value!.receiverAddress['lat']);
+    listPointArranged.removeWhere((element) =>
+        element.latitude == currentRequest.value!.receiverAddress['lng']);
+    listRequest.remove(currentRequest.value);
+    if (listRequest.isNotEmpty) {
+      currentRequest.value = listRequest[0];
+      nameLocation.value = listDestination[0];
+      changeLocation();
+      Map<String, dynamic> optimize = {
+        'listPointArranged': listPointArranged,
+        'listDestination': listDestination
+      };
+      AppServices.to.setString(MyKey.listArranged, jsonEncode(optimize));
+      AppServices.to
+          .setString(MyKey.listRequestSaving, jsonEncode(listRequest));
+      Get.back();
+      Get.back();
+    } else {
+      AppStore.to.onDelivery.value = false;
+      AppServices.to.removeString(MyKey.onDelivery);
+      AppServices.to.removeString(MyKey.listArranged);
+      AppServices.to.removeString(MyKey.listDoneSaving);
+      AppServices.to.removeString(MyKey.listRequestSaving);
+      AppStore.to.listRequestSaving.clear();
+      Get.offNamed(RouteName.categoryRoute);
+    }
   }
 }

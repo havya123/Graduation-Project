@@ -1,7 +1,6 @@
 import 'package:drivers/app/util/const.dart';
 import 'package:drivers/model/request.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class HistoryWidget extends StatelessWidget {
   HistoryWidget({super.key, required this.request});

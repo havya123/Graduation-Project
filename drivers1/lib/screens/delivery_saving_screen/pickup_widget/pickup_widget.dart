@@ -172,14 +172,20 @@ class PickUpWidget extends StatelessWidget {
                                           child: Column(
                                             children: [
                                               Expanded(
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors.black,
-                                                          width: 0.2)),
-                                                  child: const Center(
-                                                    child: Text(
-                                                        "Sender does not reply"),
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    controller
+                                                        .cancelRequestSaving();
+                                                  },
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: Colors.black,
+                                                            width: 0.2)),
+                                                    child: const Center(
+                                                      child: Text(
+                                                          "Sender does not reply"),
+                                                    ),
                                                   ),
                                                 ),
                                               ),

@@ -25,7 +25,7 @@ class PickupMultiScreen extends StatelessWidget {
     var controller = Get.find<CreateRequestMultiController>();
     return WillPopScope(
       onWillPop: () async {
-        return false;
+        return true;
       },
       child: Scaffold(
         appBar: PreferredSize(
@@ -82,12 +82,11 @@ class PickupMultiScreen extends StatelessWidget {
                   print(controller.listMarkers);
                   print(controller.currentPosition);
                   return GoogleMap(
+                    onCameraMove: (position) {
+                      controller.changeZoomLevel(position.zoom);
+                    },
                     onTap: (argument) async {
                       await controller.onTapPickScreen(argument);
-                      // // controller.listLatLng.add(argument);
-                      // controller.addMarker(argument);
-                      // controller.getPlaceByAttitude(
-                      //     "${argument.latitude},${argument.longitude}");
                     },
                     polylines: Set<Polyline>.of(controller.polylines),
                     markers: Set<Marker>.of(controller.listMarkers),
@@ -95,7 +94,7 @@ class PickupMultiScreen extends StatelessWidget {
                     initialCameraPosition: CameraPosition(
                         target: controller.currentPosition?.value ??
                             const LatLng(10.82411061294854, 106.62992475965073),
-                        zoom: 15),
+                        zoom: controller.zoomLevel.value),
                     onMapCreated: (GoogleMapController clr) {
                       controller.myController = clr;
                     },

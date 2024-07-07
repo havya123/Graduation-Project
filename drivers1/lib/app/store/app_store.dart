@@ -31,7 +31,8 @@ class AppStore extends GetxController {
   RxString address = "".obs;
 
   Future<AppStore> init() async {
-    await clearData();
+    // await clearData();
+    // AppServices.to.removeString(MyKey.listRequestSaving);
     String userSaved = AppServices.to.getString(MyKey.user);
 
     if (userSaved.isNotEmpty) {

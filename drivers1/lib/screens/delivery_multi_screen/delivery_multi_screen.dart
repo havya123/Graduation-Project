@@ -536,31 +536,45 @@ class DeliveryMultiScreen extends StatelessWidget {
                                                               children: [
                                                                 Expanded(
                                                                   child:
-                                                                      Container(
-                                                                    decoration: BoxDecoration(
-                                                                        border: Border.all(
-                                                                            color:
-                                                                                Colors.black,
-                                                                            width: 0.2)),
+                                                                      GestureDetector(
+                                                                    onTap: () {
+                                                                      controller
+                                                                          .showCancelDialogMulti(
+                                                                              context);
+                                                                    },
                                                                     child:
-                                                                        const Center(
-                                                                      child: Text(
-                                                                          "Receiver does not reply"),
+                                                                        Container(
+                                                                      decoration: BoxDecoration(
+                                                                          border: Border.all(
+                                                                              color: Colors.black,
+                                                                              width: 0.2)),
+                                                                      child:
+                                                                          const Center(
+                                                                        child: Text(
+                                                                            "Receiver does not reply"),
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                 ),
                                                                 Expanded(
                                                                   child:
-                                                                      Container(
-                                                                    decoration: BoxDecoration(
-                                                                        border: Border.all(
-                                                                            color:
-                                                                                Colors.black,
-                                                                            width: 0.2)),
+                                                                      GestureDetector(
+                                                                    onTap: () {
+                                                                      controller
+                                                                          .showCancelDialogMulti(
+                                                                              context);
+                                                                    },
                                                                     child:
-                                                                        const Center(
-                                                                      child: Text(
-                                                                          "Receiver does not want to receive order "),
+                                                                        Container(
+                                                                      decoration: BoxDecoration(
+                                                                          border: Border.all(
+                                                                              color: Colors.black,
+                                                                              width: 0.2)),
+                                                                      child:
+                                                                          const Center(
+                                                                        child: Text(
+                                                                            "Receiver does not want to receive order "),
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                 ),
